@@ -174,14 +174,6 @@ export default function ConferenceDetailsPage() {
                 </li>
               ))}
             </ul>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink to="/registration" variant="gold">
-                See categories and fees
-              </ButtonLink>
-              <ButtonLink to="/invitation-letter" variant="onDark">
-                Request an invitation letter
-              </ButtonLink>
-            </div>
           </section>
 
           <section id="programme" aria-labelledby="prog-h">
@@ -268,7 +260,7 @@ export default function ConferenceDetailsPage() {
             </span>
           </div>
 
-          <ContactBlock />
+          <ContactBlock closing="" showWebsite={false} />
         </div>
         <div className="lg:sticky lg:top-36 lg:self-start">
           <QuickLinks />

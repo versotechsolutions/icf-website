@@ -7,7 +7,17 @@ import { cn } from '@/utils/cn';
  * The "Contact Us" block that closes most event-site documents
  * (Video Conferencing, FAQ, Submission, Registration). Uses confirmed contact details only.
  */
-export function ContactBlock({ intro, className, closing = closingLine }: { intro?: string; className?: string; closing?: string }) {
+export function ContactBlock({
+  intro,
+  className,
+  closing = closingLine,
+  showWebsite = true,
+}: {
+  intro?: string;
+  className?: string;
+  closing?: string;
+  showWebsite?: boolean;
+}) {
   return (
     <section aria-labelledby="contact-block" className={cn('rounded-[var(--radius-lg)] border border-rule bg-mist p-6 sm:p-8', className)}>
       <h2 id="contact-block" className="text-h3">
@@ -40,13 +50,15 @@ export function ContactBlock({ intro, className, closing = closingLine }: { intr
             </dd>
           </div>
         </div>
-        <div className="flex gap-3">
-          <Globe aria-hidden className="mt-1 size-4 shrink-0 text-gold-700" />
-          <div>
-            <dt className="text-sm text-muted">Website</dt>
-            <dd>{site.domain}</dd>
+        {showWebsite && (
+          <div className="flex gap-3">
+            <Globe aria-hidden className="mt-1 size-4 shrink-0 text-gold-700" />
+            <div>
+              <dt className="text-sm text-muted">Website</dt>
+              <dd>{site.domain}</dd>
+            </div>
           </div>
-        </div>
+        )}
       </dl>
       {closing && <p className="mt-6 border-t border-rule pt-5 font-serif text-lg italic text-navy-800">{closing}</p>}
     </section>

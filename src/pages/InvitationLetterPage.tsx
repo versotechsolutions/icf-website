@@ -1,10 +1,8 @@
-import { Camera, ClipboardCheck, CreditCard, IdCard, Mail, ShieldAlert } from 'lucide-react';
+import { Camera, ClipboardCheck, CreditCard, IdCard, ShieldAlert } from 'lucide-react';
 import { invitationLetter } from '@/data/content';
-import { site } from '@/data/site';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EventInfoLayout } from '@/layouts/EventInfoLayout';
-import { ButtonLink } from '@/components/ui/Button';
 
 const docIcons = [ClipboardCheck, CreditCard, Camera, IdCard];
 
@@ -54,18 +52,6 @@ export default function InvitationLetterPage() {
               );
             })}
           </ul>
-          <div className="mt-6 flex flex-wrap items-center gap-4 rounded-[var(--radius-md)] bg-mist px-5 py-4">
-            <Mail aria-hidden className="size-5 text-gold-700" />
-            <p className="flex-1">
-              Send the documents to{' '}
-              <a href={`mailto:${site.contact.supportEmail}?subject=Invitation%20letter%20request`} className="link-underline font-semibold">
-                {site.contact.supportEmail}
-              </a>
-            </p>
-            <ButtonLink to="/registration" size="sm" variant="secondary">
-              Complete registration first
-            </ButtonLink>
-          </div>
         </section>
 
         <section aria-labelledby="visa-h" className="mt-16 rounded-[var(--radius-lg)] border-l-4 border-gold-500 bg-gold-50 p-6 sm:p-8">

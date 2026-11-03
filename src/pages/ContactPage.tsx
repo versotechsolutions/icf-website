@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { CheckCircle2, Globe, Mail, MapPin, Phone, Send } from 'lucide-react';
+import { CheckCircle2, Globe, Mail, Send } from 'lucide-react';
 import { contactIntro, enquiryTypes } from '@/data/content';
 import { site } from '@/data/site';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -153,48 +153,12 @@ export default function ContactPage() {
                   </div>
                 </li>
                 <li className="flex gap-4">
-                  <Mail aria-hidden className="mt-1 size-5 shrink-0 text-gold-300" />
-                  <div>
-                    <p className="text-sm text-white/60">General enquiries</p>
-                    <a href={`mailto:${site.contact.generalEmail}`} className="font-semibold hover:underline">
-                      {site.contact.generalEmail}
-                    </a>
-                  </div>
-                </li>
-                <li className="flex gap-4">
-                  <Phone aria-hidden className="mt-1 size-5 shrink-0 text-gold-300" />
-                  <div>
-                    <p className="text-sm text-white/60">Phone</p>
-                    <a href={site.contact.phoneHref} className="font-semibold hover:underline">
-                      {site.contact.phone}
-                    </a>
-                  </div>
-                </li>
-                <li className="flex gap-4">
                   <Globe aria-hidden className="mt-1 size-5 shrink-0 text-gold-300" />
                   <div>
                     <p className="text-sm text-white/60">Website</p>
                     <p className="font-semibold">{site.domain}</p>
                   </div>
                 </li>
-                <li className="flex gap-4">
-                  <MapPin aria-hidden className="mt-1 size-5 shrink-0 text-gold-300" />
-                  <div>
-                    <p className="text-sm text-white/60">Location</p>
-                    <p className="font-semibold">{site.contact.city}</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div className="border-t border-white/10 bg-navy-950/40 p-7 sm:px-8">
-              <h3 className="font-serif text-lg font-semibold text-white">Social media</h3>
-              <p className="mt-1 text-sm text-white/70">Stay updated on the latest ICF news and events.</p>
-              <ul className="mt-4 flex flex-wrap gap-2">
-                {site.social.map((s) => (
-                  <li key={s.name} className="rounded-full border border-white/20 px-3.5 py-1.5 text-sm text-white/60" title="Profile link to be supplied by ICF">
-                    {s.name} (link pending)
-                  </li>
-                ))}
               </ul>
             </div>
           </div>
