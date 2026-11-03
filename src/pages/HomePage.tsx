@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Handshake, Lightbulb, MessageSquareQuote, Presentation, TrendingUp, Users } from 'lucide-react';
+import { ArrowRight, Handshake, Lightbulb, MessageSquareQuote, TrendingUp, Users } from 'lucide-react';
 import { aboutIntro, mission, peerReviewSteps, pillars, vision } from '@/data/content';
 import { continents, countryByCode } from '@/data/countries';
 import { topics } from '@/data/topics';
@@ -11,7 +11,6 @@ import { Container } from '@/components/ui/Container';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ButtonLink } from '@/components/ui/Button';
 import { Notice } from '@/components/ui/Notice';
-import { OrbitLines } from '@/components/ui/OrbitLines';
 import { ConferenceFinder } from '@/components/home/ConferenceFinder';
 import { ConferenceRow } from '@/components/conference/ConferenceRow';
 import { TopicIcon } from '@/components/conference/TopicIcon';
@@ -23,38 +22,22 @@ const pillarIcons = [Users, Lightbulb, Handshake, TrendingUp];
 function Hero() {
   return (
     <section className="relative">
-      <div className="relative overflow-hidden bg-navy-900 text-white">
-        <OrbitLines animate className="absolute inset-0 h-full w-full lg:w-[60%]" />
-        {/* Client-supplied conference photograph, right half on large screens */}
-        <div className="absolute inset-y-0 right-0 hidden w-[44%] lg:block">
-          <picture>
-            <source srcSet="/images/conference-hall-1400.webp" type="image/webp" />
-            <img src="/images/og-image.jpg" alt="" className="h-full w-full object-cover object-[70%_center]" />
-          </picture>
-          <div className="absolute inset-0 bg-gradient-to-r from-navy-900 via-navy-900/25 to-transparent" aria-hidden />
-          <div className="absolute inset-y-0 left-0 w-px bg-gold-400/70" aria-hidden />
-        </div>
-        <Container className="relative pb-28 pt-14 sm:pt-20 lg:pb-36 lg:pt-24">
-          <div className="max-w-[38rem]">
-            <p className="font-serif text-lg italic text-gold-300">Connect, share and advance</p>
-            <h1 className="mt-4 text-display text-white">{site.heroLine}.</h1>
-            <p className="mt-6 max-w-[34rem] text-lg leading-relaxed text-white/80">
-              Discover international conferences, seminars, workshops and symposiums across disciplines, and find the right place to present your research.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink to="/conferences" variant="gold" size="lg">
-                View upcoming conferences
-              </ButtonLink>
-              <ButtonLink to="/call-for-papers" variant="onDark" size="lg">
-                Read the call for papers
-              </ButtonLink>
-            </div>
-            {/* Mobile photograph */}
-            <img src="/images/conference-hall-800.webp" alt="" className="mt-10 h-44 w-full rounded-[var(--radius-md)] object-cover sm:h-60 lg:hidden" />
-          </div>
-        </Container>
+      {/* Client-supplied home page banner (logo, tagline and the four pillars are part of the artwork) */}
+      <h1 className="sr-only">International Conference Forum (ICF): {site.heroLine}</h1>
+      <div className="bg-[#eaf2fb]">
+        <picture>
+          <source srcSet="/images/home-banner.webp" type="image/webp" />
+          <img
+            src="/images/home-banner.jpg"
+            width={1093}
+            height={436}
+            alt="International Conference Forum. Connect, Share, Advance. Bringing researchers, professionals and innovators together for a better tomorrow: global networking, knowledge sharing, collaboration opportunities and impactful research."
+            className="mx-auto block h-auto w-full max-w-[1600px]"
+            fetchPriority="high"
+          />
+        </picture>
       </div>
-      <Container className="relative -mt-20 lg:-mt-24">
+      <Container className="relative mt-8 lg:-mt-14">
         <ConferenceFinder />
       </Container>
     </section>
@@ -309,42 +292,6 @@ function Partners() {
   );
 }
 
-function CallToAction() {
-  return (
-    <section className="pb-20 lg:pb-24" aria-label="Get involved">
-      <Container className="grid overflow-hidden rounded-[var(--radius-lg)] md:grid-cols-2">
-        <div className="relative bg-navy-900 p-8 text-white sm:p-12">
-          <OrbitLines faint className="absolute inset-0 h-full w-full" />
-          <div className="relative">
-            <Presentation aria-hidden className="size-8 text-gold-400" strokeWidth={1.5} />
-            <h2 className="mt-5 text-h2 text-white">Present your research</h2>
-            <p className="mt-3 max-w-md text-white/80">Review the research themes for your subject, prepare your abstract to the guidelines and submit it for peer review.</p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <ButtonLink to="/call-for-papers" variant="gold">
-                Call for papers
-              </ButtonLink>
-              <ButtonLink to="/paper-submission" variant="onDark">
-                Submission guidelines
-              </ButtonLink>
-            </div>
-          </div>
-        </div>
-        <div className="border border-l-0 border-rule bg-gold-50 p-8 max-md:border-l max-md:border-t-0 sm:p-12">
-          <Users aria-hidden className="size-8 text-gold-700" strokeWidth={1.5} />
-          <h2 className="mt-5 text-h2">Attend in person or online</h2>
-          <p className="mt-3 max-w-md text-ink/80">Join as a listener, presenter or virtual participant. Registration categories and fees are listed for each conference.</p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <ButtonLink to="/registration">Registration and fees</ButtonLink>
-            <ButtonLink to="/video-conferencing" variant="secondary">
-              Joining online
-            </ButtonLink>
-          </div>
-        </div>
-      </Container>
-    </section>
-  );
-}
-
 export default function HomePage() {
   usePageMeta('', 'International Conference Forum (ICF) connects researchers, academicians, students and industry professionals with international academic conferences across ten subject areas.');
   return (
@@ -358,7 +305,6 @@ export default function HomePage() {
       <PeerReview />
       <Delegates />
       <Partners />
-      <CallToAction />
     </>
   );
 }
