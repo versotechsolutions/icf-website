@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import { useEffect, useRef, type KeyboardEvent, type PointerEvent } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { navIcons } from './navIcons';
@@ -35,14 +35,7 @@ export function NavDropdown({ group, open, active, onOpen, onClose, onToggle, on
   const panelRef = useRef<HTMLDivElement>(null);
   const pointerType = useRef<string>('mouse');
   const openedByHover = useRef(false);
-  const [caretX, setCaretX] = useState(24);
   const menuId = menuIdFor(group.label);
-
-  // Point the caret at the centre of the trigger label.
-  useLayoutEffect(() => {
-    const t = triggerRef.current;
-    if (t) setCaretX(t.offsetWidth / 2 - 7);
-  }, [group.label]);
 
   // Keyboard "ArrowDown" opens the menu, then focuses the first link once it is rendered (no longer inert).
   const focusFirstOnOpen = useRef(false);
@@ -155,7 +148,7 @@ export function NavDropdown({ group, open, active, onOpen, onClose, onToggle, on
         />
       </button>
 
-      <DropdownPanel id={menuId} open={open} caretX={caretX} panelRef={panelRef} onKeyDown={onPanelKey}>
+      <DropdownPanel id={menuId} open={open} panelRef={panelRef} onKeyDown={onPanelKey}>
         {group.items!.map((item, i) => (
           <DropdownLink key={item.to} item={item} index={i} onNavigate={onClose} />
         ))}
@@ -164,18 +157,16 @@ export function NavDropdown({ group, open, active, onOpen, onClose, onToggle, on
   );
 }
 
-/** The floating panel: white card, gold top rule, caret pointing at the trigger, fade + lift transition. */
+/** The floating panel: white card whose gold top rule draws out from the centre as it lands. */
 export function DropdownPanel({
   id,
   open,
-  caretX,
   panelRef,
   onKeyDown,
   children,
 }: {
   id: string;
   open: boolean;
-  caretX: number;
   panelRef: React.RefObject<HTMLDivElement | null>;
   onKeyDown: (e: KeyboardEvent) => void;
   children: React.ReactNode;
@@ -198,14 +189,8 @@ export function DropdownPanel({
       )}
     >
       <div className="dd-card relative w-[23rem] rounded-[var(--radius-lg)] border border-rule bg-white shadow-[0_1px_2px_rgb(14_35_71/0.06),0_18px_40px_-16px_rgb(8_22_48/0.35)]">
-        {/* Caret */}
-        <span
-          aria-hidden
-          className="absolute -top-[6px] size-3.5 rotate-45 rounded-tl-[3px] bg-gold-500"
-          style={{ left: caretX }}
-        />
-        {/* Gold top rule */}
-        <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] rounded-t-[var(--radius-lg)] bg-gold-500" />
+        {/* Gold top rule: grows from the centre out to both sides as the panel lands */}
+        <span aria-hidden className="dd-rule absolute inset-x-0 top-0 h-[3px] rounded-t-[var(--radius-lg)] bg-gold-500" />
         <ul className="relative space-y-0.5 p-2 pt-3">{children}</ul>
       </div>
     </div>
