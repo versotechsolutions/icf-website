@@ -20,7 +20,7 @@
 
 **Result:** 68/68 loaded with **0 console errors, 0 page errors and 0 failed requests.**
 
-## 3. Interaction tests (`npm run test:smoke`), 21/21 passed
+## 3. Interaction tests (`npm run test:smoke`), 26/26 passed
 
 | # | Test |
 |---|---|
@@ -37,7 +37,12 @@
 | 11 | FAQ: accordion expands; search filters questions |
 | 12 | Download brochure: modal opens, validates, closes with Esc |
 | 13 | Awards: tabs switch content |
-| 14 | Desktop dropdown navigation opens and navigates |
+| 14a | Dropdown: hover opens with transition; panel is aligned to its menu item and sits directly below the header |
+| 14b | Dropdown: moving the mouse diagonally from the item into the panel never closes it (sampled every 25 ms) |
+| 14c | Dropdown: only one dropdown open at a time; leaving the nav closes it after the grace period |
+| 14d | Dropdown: click opens/keeps open, click outside closes, submenu link navigates and closes the menu |
+| 14e | Dropdown keyboard: ArrowDown focuses first link, arrows/End move, Escape closes and returns focus, Enter toggles, Tab out closes |
+| 14f | Dropdown: tap toggles open/closed on large touch screens |
 | 15 | Mobile menu opens, expands a group, navigates and closes |
 | 16 | Admin login validates, then opens the dashboard |
 | 17 | Admin: delete conference with confirmation removes the row |
@@ -61,6 +66,14 @@ Full-page screenshots were reviewed at desktop, tablet (820px, home) and mobile 
 | Admin sidebar background stopped at viewport height | Sidebar column painted full height, inner panel sticky |
 | Sample registration dates later than today | Sample data limited to May–October 2026 |
 | About page "Core values" heading sat at the bottom of its column | Top-aligned and sticky |
+
+## 4b. Navigation dropdown redesign
+
+`src/components/layout/NavDropdown.tsx` (reusable `NavDropdown`, `DropdownPanel`, `DropdownLink`) replaces the original inline dropdown. Desktop open state now lives in one parent (`DesktopNav`), so only one dropdown can be open. Design: a white card with a 3px gold top rule and a gold diamond caret centred on the menu item, an icon tile + label + one-line description for each link, a hover highlight, the current page marked with a gold side bar, and fade-and-lift transitions of 200 ms in and 150 ms out. Screenshots: `docs/screenshots/nav-*.jpg`.
+
+Bugs found and fixed while testing:
+- Mouse click right after hover toggled the menu closed: the hover update had not rendered yet. Fixed by tracking hover-open in a ref.
+- ArrowDown could not focus the first link: the panel's visibility transition keeps it hidden for the first frame. Fixed by making visibility change instantly when opening, and only delaying it when closing.
 
 ## 5. Accessibility spot checks
 

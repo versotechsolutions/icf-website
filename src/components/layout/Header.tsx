@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { ChevronDown, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
 import { mainNav, site } from '@/data/site';
@@ -7,6 +7,8 @@ import { Container } from '@/components/ui/Container';
 import { Logo } from '@/components/ui/Logo';
 import { ButtonLink } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
+import { NavDropdown } from './NavDropdown';
+import { navIcons } from './navIcons';
 import type { NavGroup } from '@/types';
 
 function UtilityBar() {
@@ -38,49 +40,71 @@ function isGroupActive(group: NavGroup, pathname: string) {
   return group.items?.some((i) => pathname.startsWith(i.to.split('?')[0])) ?? false;
 }
 
-function DesktopDropdown({ group, pathname }: { group: NavGroup; pathname: string }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLLIElement>(null);
-  useOnClickOutside(ref, () => setOpen(false), open);
-  const active = isGroupActive(group, pathname);
-  const menuId = `menu-${group.label.replace(/\s+/g, '-').toLowerCase()}`;
+/** Desktop navigation. Owns which dropdown is open so only one can be open at a time. */
+function DesktopNav({ pathname }: { pathname: string }) {
+  const [openLabel, setOpenLabel] = useState<string | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const closeTimer = useRef<number | undefined>(undefined);
+
+  const cancelClose = () => window.clearTimeout(closeTimer.current);
+  const close = useCallback(() => {
+    cancelClose();
+    setOpenLabel(null);
+  }, []);
+  // Hover intent: wait briefly before closing so moving diagonally into the panel never flickers.
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = window.setTimeout(() => setOpenLabel(null), 180);
+  };
+
+  useOnClickOutside(navRef, close, openLabel !== null);
+  useEffect(close, [pathname, close]);
+  useEffect(() => cancelClose, []);
 
   return (
-    <li ref={ref} className="relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button
-        aria-expanded={open}
-        aria-controls={menuId}
-        // Mouse: hover already opened the menu, so a click keeps it open.
-        // Keyboard (detail === 0): Enter/Space toggles.
-        onClick={(e) => (e.detail === 0 ? setOpen((o) => !o) : setOpen(true))}
-        className={cn(
-          'relative inline-flex h-full items-center gap-1 whitespace-nowrap px-2.5 text-[0.95rem] font-semibold',
-          active ? 'text-navy-900' : 'text-ink/80 hover:text-navy-900',
-        )}
-      >
-        {group.label}
-        <ChevronDown aria-hidden className={cn('size-4 text-gold-500 transition-transform', open && 'rotate-180')} />
-        {active && <span className="absolute inset-x-2.5 -bottom-px h-0.5 bg-gold-500" aria-hidden />}
-      </button>
-      <div id={menuId} hidden={!open} className="absolute left-0 top-full z-50 pt-2">
-        <ul className="w-80 rounded-[var(--radius-md)] border border-rule bg-white p-2 shadow-[var(--shadow-panel)]">
-          {group.items!.map((item) => (
-            <li key={item.to}>
+    <nav ref={navRef} aria-label="Main" className="hidden xl:flex">
+      <ul className="flex items-stretch">
+        {mainNav.map((g) =>
+          g.items ? (
+            <NavDropdown
+              key={g.label}
+              group={g}
+              open={openLabel === g.label}
+              active={isGroupActive(g, pathname)}
+              onOpen={() => {
+                cancelClose();
+                setOpenLabel(g.label);
+              }}
+              onClose={close}
+              onToggle={() => {
+                cancelClose();
+                setOpenLabel((o) => (o === g.label ? null : g.label));
+              }}
+              onPointerEnter={cancelClose}
+              onPointerLeave={scheduleClose}
+            />
+          ) : (
+            <li key={g.label} className="relative" onPointerEnter={(e) => e.pointerType === 'mouse' && openLabel && scheduleClose()}>
               <NavLink
-                to={item.to}
-                onClick={() => setOpen(false)}
+                to={g.to!}
+                end={g.to === '/'}
+                onFocus={close}
                 className={({ isActive }) =>
-                  cn('block rounded-[var(--radius-sm)] px-3 py-2.5 hover:bg-mist', isActive && 'bg-mist')
+                  cn('relative inline-flex h-full items-center whitespace-nowrap px-2.5 text-[0.95rem] font-semibold transition-colors', isActive ? 'text-navy-900' : 'text-ink/80 hover:text-navy-900')
                 }
               >
-                <span className="block font-semibold text-navy-900">{item.label}</span>
-                {item.description && <span className="mt-0.5 block text-sm text-muted">{item.description}</span>}
+                {({ isActive }) => (
+                  <>
+                    {g.label}
+                    {isActive && <span className="absolute inset-x-2.5 -bottom-px h-0.5 bg-gold-500" aria-hidden />}
+                  </>
+                )}
               </NavLink>
             </li>
-          ))}
-        </ul>
-      </div>
-    </li>
+          ),
+        )}
+      </ul>
+    </nav>
   );
 }
 
@@ -106,21 +130,51 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
               <li key={g.label}>
                 <button
                   aria-expanded={expanded === g.label}
+                  aria-controls={`m-${g.label.replace(/\s+/g, '-').toLowerCase()}`}
                   onClick={() => setExpanded((e) => (e === g.label ? null : g.label))}
                   className="flex w-full items-center justify-between py-4 text-left text-lg font-semibold text-navy-900"
                 >
                   {g.label}
-                  <ChevronDown aria-hidden className={cn('size-5 text-gold-500 transition-transform', expanded === g.label && 'rotate-180')} />
+                  <ChevronDown aria-hidden className={cn('size-5 text-gold-500 transition-transform duration-200', expanded === g.label && 'rotate-180')} />
                 </button>
-                <ul hidden={expanded !== g.label} className="mb-3 space-y-1 border-l-2 border-gold-500 pl-4">
-                  {g.items.map((i) => (
-                    <li key={i.to}>
-                      <NavLink to={i.to} onClick={onClose} className="block py-2 text-[1.02rem] text-ink/85">
-                        {i.label}
-                      </NavLink>
-                    </li>
-                  ))}
-                </ul>
+                {/* grid-rows 0fr → 1fr gives a smooth height transition without measuring */}
+                <div
+                  id={`m-${g.label.replace(/\s+/g, '-').toLowerCase()}`}
+                  inert={expanded !== g.label}
+                  className={cn('grid transition-[grid-template-rows,opacity] duration-200 ease-out', expanded === g.label ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0')}
+                >
+                  <ul className="overflow-hidden">
+                    <li className="h-1" aria-hidden />
+                    {g.items.map((i) => {
+                      const Icon = navIcons[i.to.split('?')[0]];
+                      return (
+                        <li key={i.to}>
+                          <NavLink
+                            to={i.to}
+                            onClick={onClose}
+                            className={({ isActive }) =>
+                              cn('relative flex items-center gap-3 rounded-[var(--radius-md)] px-2 py-2.5 text-[1.02rem] transition-colors active:bg-mist', isActive ? 'bg-mist font-semibold text-navy-900' : 'text-ink/85')
+                            }
+                          >
+                            {({ isActive }) => (
+                              <>
+                                {isActive && <span aria-hidden className="absolute inset-y-2 left-0 w-[3px] rounded-r bg-gold-500" />}
+                                {Icon && (
+                                  <span className={cn('inline-flex size-8 shrink-0 items-center justify-center rounded-[var(--radius-md)]', isActive ? 'bg-navy-900 text-gold-300' : 'bg-navy-50 text-navy-800')}>
+                                    <Icon aria-hidden className="size-4" strokeWidth={1.7} />
+                                  </span>
+                                )}
+                                {i.label}
+                                {isActive && <span className="sr-only"> (current page)</span>}
+                              </>
+                            )}
+                          </NavLink>
+                        </li>
+                      );
+                    })}
+                    <li className="h-3" aria-hidden />
+                  </ul>
+                </div>
               </li>
             ) : (
               <li key={g.label}>
@@ -163,32 +217,7 @@ export function Header() {
           <div className="flex items-center py-2.5">
             <Logo variant="lockup" />
           </div>
-          <nav aria-label="Main" className="hidden xl:flex">
-            <ul className="flex items-stretch">
-              {mainNav.map((g) =>
-                g.items ? (
-                  <DesktopDropdown key={g.label} group={g} pathname={pathname} />
-                ) : (
-                  <li key={g.label} className="relative">
-                    <NavLink
-                      to={g.to!}
-                      end={g.to === '/'}
-                      className={({ isActive }) =>
-                        cn('relative inline-flex h-full items-center whitespace-nowrap px-2.5 text-[0.95rem] font-semibold', isActive ? 'text-navy-900' : 'text-ink/80 hover:text-navy-900')
-                      }
-                    >
-                      {({ isActive }) => (
-                        <>
-                          {g.label}
-                          {isActive && <span className="absolute inset-x-2.5 -bottom-px h-0.5 bg-gold-500" aria-hidden />}
-                        </>
-                      )}
-                    </NavLink>
-                  </li>
-                ),
-              )}
-            </ul>
-          </nav>
+          <DesktopNav pathname={pathname} />
           <div className="flex items-center gap-3">
             <ButtonLink to="/registration" size="sm" className="hidden sm:inline-flex">
               Register

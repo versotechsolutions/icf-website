@@ -173,13 +173,116 @@ await test('Awards tabs switch content', async () => {
   await page.waitForFunction(() => document.querySelector('#award-panel h2')?.textContent === 'Best Student Paper Award');
 });
 
-await test('Desktop dropdown menu opens and navigates', async () => {
+const openCount = () => page.$$eval('nav[aria-label=Main] button[aria-expanded=true]', (b) => b.length);
+const panelState = (id) => page.$eval(`#${id}`, (el) => ({ state: el.dataset.state, opacity: getComputedStyle(el).opacity, visibility: getComputedStyle(el).visibility }));
+const center = async (sel) => {
+  const r = await page.$eval(sel, (el) => { const b = el.getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2, top: b.top, bottom: b.bottom, left: b.left }; });
+  return r;
+};
+
+await test('Dropdown: hover opens with transition, aligned directly below its menu item', async () => {
   await go('/');
-  await page.click('button[aria-controls="menu-for-participants"]');
-  await page.waitForSelector('#menu-for-participants:not([hidden])');
-  const [link] = await page.$$('xpath/.//*[@id="menu-for-participants"]//a[contains(., "Invitation letter")]');
-  await link.click();
-  await page.waitForFunction(() => location.pathname === '/invitation-letter');
+  const t = await center('button[aria-controls="menu-conferences"]');
+  await page.mouse.move(t.x, t.y);
+  await sleep(300);
+  const st = await panelState('menu-conferences');
+  assert(st.state === 'open' && st.opacity === '1' && st.visibility === 'visible', `panel not visible: ${JSON.stringify(st)}`);
+  const li = await page.$eval('button[aria-controls="menu-conferences"]', (b) => b.parentElement.getBoundingClientRect().left);
+  const panel = await page.$eval('#menu-conferences', (el) => { const r = el.getBoundingClientRect(); return { left: r.left, top: r.top }; });
+  const header = await page.$eval('header', (h) => h.getBoundingClientRect().bottom);
+  assert(Math.abs(panel.left - li) < 1, `panel not aligned with item (${panel.left} vs ${li})`);
+  assert(Math.abs(panel.top - header) < 2, `panel not directly below header (${panel.top} vs ${header})`);
+});
+
+await test('Dropdown: moving the mouse from item into the panel does not flicker closed', async () => {
+  await go('/');
+  const t = await center('button[aria-controls="menu-for-participants"]');
+  await page.mouse.move(t.x, t.y);
+  await sleep(250);
+  const link = await center('#menu-for-participants a[href="/awards"]');
+  // move diagonally in small steps through the gap, sampling the state on the way
+  let closedOnTheWay = false;
+  for (let i = 1; i <= 12; i++) {
+    await page.mouse.move(t.x + ((link.x - t.x) * i) / 12, t.y + ((link.y - t.y) * i) / 12);
+    await sleep(25);
+    if ((await panelState('menu-for-participants')).state !== 'open') closedOnTheWay = true;
+  }
+  assert(!closedOnTheWay, 'panel closed while moving into it');
+});
+
+await test('Dropdown: only one dropdown open at a time; leaving closes it', async () => {
+  await go('/');
+  const a = await center('button[aria-controls="menu-conferences"]');
+  const b = await center('button[aria-controls="menu-conference-info"]');
+  await page.mouse.move(a.x, a.y);
+  await sleep(250);
+  await page.mouse.move(b.x, b.y, { steps: 6 });
+  await sleep(300);
+  assert((await openCount()) === 1, 'more than one dropdown open');
+  assert((await panelState('menu-conference-info')).state === 'open', 'hovered dropdown not open');
+  await page.mouse.move(b.x, 600, { steps: 4 });
+  await page.mouse.move(40, 700);
+  await sleep(400);
+  assert((await openCount()) === 0, 'dropdown did not close after leaving');
+});
+
+await test('Dropdown: click opens/keeps open, click outside closes, submenu link navigates', async () => {
+  await go('/');
+  await page.click('button[aria-controls="menu-conferences"]');
+  await sleep(250);
+  assert((await panelState('menu-conferences')).state === 'open', 'click did not open');
+  await page.mouse.click(700, 600);
+  await sleep(300);
+  assert((await openCount()) === 0, 'outside click did not close');
+  const t = await center('button[aria-controls="menu-conferences"]');
+  await page.mouse.move(t.x, t.y);
+  await sleep(250);
+  await page.click('#menu-conferences a[href="/topics"]');
+  await page.waitForFunction(() => location.pathname === '/topics');
+  await sleep(300);
+  assert((await openCount()) === 0, 'menu stayed open after navigating');
+});
+
+await test('Dropdown: keyboard (Enter, arrows, Home/End, Escape, Tab out)', async () => {
+  await go('/');
+  await page.focus('button[aria-controls="menu-conference-info"]');
+  await page.keyboard.press('ArrowDown');
+  await sleep(100);
+  let href = await page.evaluate(() => document.activeElement.getAttribute('href'));
+  assert(href === '/call-for-papers', `ArrowDown did not focus first link (${href})`);
+  await page.keyboard.press('ArrowDown');
+  href = await page.evaluate(() => document.activeElement.getAttribute('href'));
+  assert(href === '/programme', 'ArrowDown did not move to next link');
+  await page.keyboard.press('End');
+  href = await page.evaluate(() => document.activeElement.getAttribute('href'));
+  assert(href === '/video-conferencing', 'End did not move to last link');
+  await page.keyboard.press('Escape');
+  await sleep(50);
+  const focused = await page.evaluate(() => document.activeElement.getAttribute('aria-controls'));
+  assert(focused === 'menu-conference-info' && (await openCount()) === 0, 'Escape did not close and return focus');
+  await page.keyboard.press('Enter');
+  await sleep(50);
+  assert((await openCount()) === 1, 'Enter did not open');
+  await page.keyboard.press('Enter');
+  await sleep(50);
+  assert((await openCount()) === 0, 'Enter did not toggle closed');
+  await page.keyboard.press('Enter');
+  for (let i = 0; i < 7; i++) await page.keyboard.press('Tab');
+  await sleep(50);
+  assert((await openCount()) === 0, 'tabbing out did not close the menu');
+});
+
+await test('Dropdown: touch tap toggles on large touch screens', async () => {
+  await page.setViewport({ width: 1366, height: 1024, hasTouch: true, isMobile: false });
+  await go('/');
+  const t = await center('button[aria-controls="menu-for-participants"]');
+  await page.touchscreen.tap(t.x, t.y);
+  await sleep(250);
+  assert((await panelState('menu-for-participants')).state === 'open', 'tap did not open');
+  await page.touchscreen.tap(t.x, t.y);
+  await sleep(250);
+  assert((await openCount()) === 0, 'second tap did not close');
+  await page.setViewport({ width: 1366, height: 900 });
 });
 
 await test('Mobile menu opens, expands a group and navigates', async () => {
