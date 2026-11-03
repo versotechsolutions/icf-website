@@ -188,7 +188,7 @@ export function DropdownPanel({
           : 'invisible -translate-y-1 opacity-0 transition-[opacity,transform,visibility] duration-150',
       )}
     >
-      <div className="dd-card relative w-[23rem] rounded-[var(--radius-lg)] border border-rule bg-white shadow-[0_1px_2px_rgb(14_35_71/0.06),0_18px_40px_-16px_rgb(8_22_48/0.35)]">
+      <div className="dd-card relative w-[23rem] rounded-[var(--radius-lg)] border border-navy-800 bg-navy-900 shadow-[0_1px_2px_rgb(8_22_48/0.2),0_22px_44px_-16px_rgb(8_22_48/0.55)]">
         {/* Gold top rule: grows from the centre out to both sides as the panel lands */}
         <span aria-hidden className="dd-rule absolute inset-x-0 top-0 h-[3px] rounded-t-[var(--radius-lg)] bg-gold-500" />
         <ul className="relative space-y-0.5 p-2 pt-3">{children}</ul>
@@ -208,32 +208,32 @@ export function DropdownLink({ item, index = 0, onNavigate }: { item: NavItem; i
         className={({ isActive }) =>
           cn(
             'group/link relative flex items-start gap-3 rounded-[var(--radius-md)] px-3 py-2.5 outline-offset-[-2px] transition-colors',
-            'hover:bg-mist focus-visible:bg-mist',
-            isActive && 'bg-mist',
+            'hover:bg-navy-800 focus-visible:bg-navy-800',
+            isActive && 'bg-navy-800',
           )
         }
       >
         {({ isActive }) => (
           <>
-            {isActive && <span aria-hidden className="absolute inset-y-2.5 left-0 w-[3px] rounded-r bg-gold-500" />}
+            {isActive && <span aria-hidden className="absolute inset-y-2.5 left-0 w-[3px] rounded-r bg-gold-400" />}
             {Icon && (
               <span
                 className={cn(
                   'mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] transition-colors',
                   isActive
-                    ? 'bg-navy-900 text-gold-300'
-                    : 'bg-navy-50 text-navy-800 group-hover/link:bg-navy-900 group-hover/link:text-gold-300 group-focus-visible/link:bg-navy-900 group-focus-visible/link:text-gold-300',
+                    ? 'bg-gold-400 text-navy-950'
+                    : 'bg-white/10 text-gold-300 group-hover/link:bg-gold-400 group-hover/link:text-navy-950 group-focus-visible/link:bg-gold-400 group-focus-visible/link:text-navy-950',
                 )}
               >
                 <Icon aria-hidden className="size-[1.125rem]" strokeWidth={1.7} />
               </span>
             )}
             <span className="min-w-0 flex-1">
-              <span className={cn('block font-semibold leading-snug transition-colors', isActive ? 'text-navy-900' : 'text-navy-900 group-hover/link:text-globe-700')}>
+              <span className={cn('block font-semibold leading-snug text-white transition-colors', !isActive && 'group-hover/link:text-gold-300')}>
                 {item.label}
                 {isActive && <span className="sr-only"> (current page)</span>}
               </span>
-              {item.description && <span className="mt-0.5 block text-[0.84rem] leading-snug text-muted">{item.description}</span>}
+              {item.description && <span className="mt-0.5 block text-[0.84rem] leading-snug text-white/70">{item.description}</span>}
             </span>
             <ChevronRight
               aria-hidden
