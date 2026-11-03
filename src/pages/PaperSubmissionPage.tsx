@@ -6,6 +6,7 @@ import { EventInfoLayout } from '@/layouts/EventInfoLayout';
 import { Notice } from '@/components/ui/Notice';
 import { Button } from '@/components/ui/Button';
 import { ContactBlock } from '@/components/layout/ContactBlock';
+import { PaperSubmissionForm } from '@/components/forms/PaperSubmissionForm';
 import type { LabelledText } from '@/types';
 
 function GuidelineList({ items }: { items: LabelledText[] }) {
@@ -100,9 +101,17 @@ export default function PaperSubmissionPage() {
             Authors should ensure that their manuscripts follow the applicable conference formatting requirements and submission deadlines. Acceptance of an abstract does not automatically guarantee acceptance of the full paper.
           </Notice>
           <TemplateButton label="Sample full paper template" />
-          <Notice tone="pending" className="mt-6">
-            Online submission portal link: awaiting confirmation from ICF ("[Insert Submission Link]" in the source document).
-          </Notice>
+        </section>
+
+        <section id="submit" aria-labelledby="submit-h" className="mt-16 scroll-mt-32 rounded-[var(--radius-lg)] border border-rule bg-mist p-6 sm:p-8">
+          <h2 id="submit-h" className="text-h2">
+            Paper submission
+          </h2>
+          <span className="rule-gold mt-4" aria-hidden />
+          <p className="mt-6 max-w-[62ch] text-muted">
+            Upload your abstract or full paper using the form below, after reviewing the guidelines above. Fields marked * are required.
+          </p>
+          <PaperSubmissionForm />
         </section>
 
         <ContactBlock
