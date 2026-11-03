@@ -141,14 +141,15 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
                 <div
                   id={`m-${g.label.replace(/\s+/g, '-').toLowerCase()}`}
                   inert={expanded !== g.label}
+                  data-expanded={expanded === g.label}
                   className={cn('grid transition-[grid-template-rows,opacity] duration-200 ease-out', expanded === g.label ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0')}
                 >
                   <ul className="overflow-hidden">
                     <li className="h-1" aria-hidden />
-                    {g.items.map((i) => {
+                    {g.items.map((i, idx) => {
                       const Icon = navIcons[i.to.split('?')[0]];
                       return (
-                        <li key={i.to}>
+                        <li key={i.to} className="dd-item" style={{ '--i': idx } as React.CSSProperties}>
                           <NavLink
                             to={i.to}
                             onClick={onClose}

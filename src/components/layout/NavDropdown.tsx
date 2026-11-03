@@ -156,8 +156,8 @@ export function NavDropdown({ group, open, active, onOpen, onClose, onToggle, on
       </button>
 
       <DropdownPanel id={menuId} open={open} caretX={caretX} panelRef={panelRef} onKeyDown={onPanelKey}>
-        {group.items!.map((item) => (
-          <DropdownLink key={item.to} item={item} onNavigate={onClose} />
+        {group.items!.map((item, i) => (
+          <DropdownLink key={item.to} item={item} index={i} onNavigate={onClose} />
         ))}
       </DropdownPanel>
     </li>
@@ -193,11 +193,11 @@ export function DropdownPanel({
         // Opening: visibility flips immediately (so links are focusable at once) while opacity/position animate.
         // Closing: visibility waits for the fade-out to finish.
         open
-          ? 'visible translate-y-0 opacity-100 transition-[opacity,transform] duration-200'
-          : 'invisible -translate-y-1.5 opacity-0 transition-[opacity,transform,visibility] duration-150',
+          ? 'visible opacity-100'
+          : 'invisible -translate-y-1 opacity-0 transition-[opacity,transform,visibility] duration-150',
       )}
     >
-      <div className="relative w-[23rem] rounded-[var(--radius-lg)] border border-rule bg-white shadow-[0_1px_2px_rgb(14_35_71/0.06),0_18px_40px_-16px_rgb(8_22_48/0.35)]">
+      <div className="dd-card relative w-[23rem] rounded-[var(--radius-lg)] border border-rule bg-white shadow-[0_1px_2px_rgb(14_35_71/0.06),0_18px_40px_-16px_rgb(8_22_48/0.35)]">
         {/* Caret */}
         <span
           aria-hidden
@@ -213,10 +213,10 @@ export function DropdownPanel({
 }
 
 /** One destination in a dropdown: icon tile, label, one-line description; current page marked. */
-export function DropdownLink({ item, onNavigate }: { item: NavItem; onNavigate: () => void }) {
+export function DropdownLink({ item, index = 0, onNavigate }: { item: NavItem; index?: number; onNavigate: () => void }) {
   const Icon = navIcons[item.to.split('?')[0]];
   return (
-    <li>
+    <li className="dd-item" style={{ '--i': index } as React.CSSProperties}>
       <NavLink
         to={item.to}
         onClick={onNavigate}
