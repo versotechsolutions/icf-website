@@ -1,0 +1,174 @@
+@import '@fontsource-variable/source-serif-4';
+@import '@fontsource-variable/source-serif-4/wght-italic.css';
+@import '@fontsource-variable/public-sans';
+@import 'tailwindcss';
+
+/*
+ * ICF design tokens — see docs/design-system.md
+ * Navy foundation, white paper, gold used sparingly for rules and markers.
+ */
+@theme {
+  --color-navy-950: #081630;
+  --color-navy-900: #0e2347;
+  --color-navy-800: #163262;
+  --color-navy-700: #1f4180;
+  --color-navy-100: #dfe6f1;
+  --color-navy-50: #f2f5f9;
+
+  --color-globe-600: #1f5bb5;
+  --color-globe-700: #184a95;
+  --color-globe-100: #e3ecf9;
+
+  --color-gold-300: #e6c578;
+  --color-gold-400: #d9ab4a;
+  --color-gold-500: #c8962e;
+  --color-gold-700: #8a6414;
+  --color-gold-50: #fbf5e7;
+
+  --color-ink: #16233a;
+  --color-muted: #4d5b72;
+  --color-rule: #d9e0ea;
+  --color-mist: #f2f5f9;
+
+  --color-success: #1d7a4c;
+  --color-warning: #9a5b00;
+  --color-danger: #b42318;
+
+  --font-serif: 'Source Serif 4 Variable', 'Georgia', 'Times New Roman', serif;
+  --font-sans: 'Public Sans Variable', 'Segoe UI', system-ui, sans-serif;
+
+  /* Type scale — modular 1.25 (major third) anchored on 17px body */
+  --text-display: 3.5rem;
+  --text-display--line-height: 1.08;
+  --text-h1: 2.75rem;
+  --text-h1--line-height: 1.12;
+  --text-h2: 2.125rem;
+  --text-h2--line-height: 1.18;
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 1.3;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --shadow-lift: 0 1px 2px rgb(14 35 71 / 0.06), 0 8px 24px -12px rgb(14 35 71 / 0.18);
+  --shadow-panel: 0 20px 48px -24px rgb(8 22 48 / 0.45);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 7rem;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-ink);
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    color: var(--color-navy-900);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible {
+    outline: 3px solid var(--color-gold-400);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  ::selection { background: var(--color-gold-300); color: var(--color-navy-950); }
+  /* Grid items may shrink below their content width (tables scroll inside instead of widening the page). */
+  .grid > * { min-width: 0; }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --text-display: 2.375rem;
+    --text-h1: 2.125rem;
+    --text-h2: 1.75rem;
+    --text-h3: 1.3125rem;
+  }
+}
+
+@layer components {
+  /* Long-form academic prose */
+  .prose-icf { max-width: 68ch; }
+  .prose-icf p + p { margin-top: 1em; }
+  .prose-icf strong { color: var(--color-navy-900); font-weight: 600; }
+
+  /* Gold hairline used to mark the start of a section heading */
+  .rule-gold {
+    display: block;
+    width: 2.5rem;
+    height: 2px;
+    background: var(--color-gold-500);
+  }
+
+  .link-underline {
+    color: var(--color-globe-700);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: rgb(31 91 181 / 0.35);
+  }
+  .link-underline:hover { text-decoration-color: currentColor; }
+
+  .field-input {
+    width: 100%;
+    border: 1px solid #b9c4d4;
+    border-radius: var(--radius-sm);
+    background: #fff;
+    padding: 0.625rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-ink);
+    transition: border-color 120ms, box-shadow 120ms;
+  }
+  .field-input::placeholder { color: #7d8aa0; }
+  select.field-input {
+    appearance: none;
+    padding-right: 2.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234d5b72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+  }
+  .field-input:hover { border-color: #8d9bb2; }
+  .field-input:focus {
+    outline: none;
+    border-color: var(--color-globe-600);
+    box-shadow: 0 0 0 3px rgb(31 91 181 / 0.18);
+  }
+  .field-input[aria-invalid='true'] {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgb(180 35 24 / 0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* The one orchestrated moment: hero orbital lines draw in once on load */
+@keyframes orbit-draw {
+  from { stroke-dashoffset: 1600; }
+  to { stroke-dashoffset: 0; }
+}
+.orbit-line {
+  stroke-dasharray: 1600;
+  animation: orbit-draw 2.2s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+.orbit-line:nth-child(2) { animation-delay: 0.25s; }
+.orbit-line:nth-child(3) { animation-delay: 0.5s; }
