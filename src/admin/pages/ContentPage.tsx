@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { ImagePlus, Plus, Trash2 } from 'lucide-react';
-import { sampleConferences } from '@/data/conferences.sample';
 import { agendaHighlights, conferenceHighlights, exampleVenue, icicgbAbout } from '@/data/content';
 import { Button } from '@/components/ui/Button';
 import { AdminPageHeader, Panel, SegmentedFilter } from '../components/AdminUI';
 import { useToast } from '../components/Toast';
+import { useAdminData } from '../AdminData';
 
 /**
  * Conference-specific content management: the sections of each event page
@@ -24,11 +24,24 @@ function Field({ id, label, children }: { id: string; label: string; children: R
 
 export default function ContentPage() {
   const toast = useToast();
+  const { conferences } = useAdminData();
   const [slug, setSlug] = useState('icicgb-26');
   const [section, setSection] = useState<(typeof sections)[number]>('About');
-  const conf = sampleConferences.find((c) => c.slug === slug)!;
+  // Falls back to the first conference if the selected one was deleted in this session.
+  const conf = conferences.find((c) => c.slug === slug) ?? conferences[0];
   const [highlights, setHighlights] = useState(conferenceHighlights.map((h) => `${h.title}: ${h.text}`));
   const [status, setStatus] = useState('Published');
+
+  if (!conf) {
+    return (
+      <>
+        <AdminPageHeader title="Conference content" intro="Edit the content shown on each conference's public page." />
+        <Panel>
+          <p className="text-muted">There are no conferences in the list. Add or import a conference under Conferences first.</p>
+        </Panel>
+      </>
+    );
+  }
 
   return (
     <>
@@ -36,22 +49,26 @@ export default function ContentPage() {
         title="Conference content"
         intro="Edit the content shown on each conference's public page."
         actions={
-          <select aria-label="Conference" className="field-input py-2 text-sm" value={slug} onChange={(e) => setSlug(e.target.value)}>
-            {sampleConferences.map((c) => <option key={c.slug} value={c.slug}>{c.acronym}</option>)}
+          <select aria-label="Conference" className="field-input py-2 text-sm" value={conf.slug} onChange={(e) => setSlug(e.target.value)}>
+            {conferences.map((c) => <option key={c.id} value={c.slug}>{c.acronym}</option>)}
           </select>
         }
       />
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <SegmentedFilter label="Page section" options={sections} value={section} onChange={setSection} />
-        <a href={`/event/${slug}`} target="_blank" rel="noreferrer" className="text-sm font-semibold text-globe-700 hover:underline">View public page</a>
+        {conf.addedInSession ? (
+          <span className="text-sm text-muted">No public page yet (added in this demo session)</span>
+        ) : (
+          <a href={`/event/${conf.slug}`} target="_blank" rel="noreferrer" className="text-sm font-semibold text-globe-700 hover:underline">View public page</a>
+        )}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]">
-        <Panel title={`${section}: ${conf.acronym}`} key={`${slug}-${section}`}>
+        <Panel title={`${section}: ${conf.acronym}`} key={`${conf.slug}-${section}`}>
           {section === 'About' && (
             <div className="space-y-5">
               <Field id="c-title" label="Content title"><input id="c-title" className="field-input" defaultValue="About the conference" /></Field>
-              <Field id="c-body" label="Content"><textarea id="c-body" rows={10} className="field-input" defaultValue={slug === 'icicgb-26' ? icicgbAbout.join('\n\n') : `The ${conf.title} (${conf.acronym}), organized through the International Conference Forum (ICF), brings together scholars, researchers, academicians, and industry experts from around the world.`} /></Field>
+              <Field id="c-body" label="Content"><textarea id="c-body" rows={10} className="field-input" defaultValue={conf.slug === 'icicgb-26' ? icicgbAbout.join('\n\n') : `The ${conf.title} (${conf.acronym}), organized through the International Conference Forum (ICF), brings together scholars, researchers, academicians, and industry experts from around the world.`} /></Field>
             </div>
           )}
           {section === 'Highlights' && (
@@ -75,9 +92,9 @@ export default function ContentPage() {
           )}
           {section === 'Venue' && (
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field id="v-name" label="Venue name"><input id="v-name" className="field-input" defaultValue={slug === 'icicgb-26' ? exampleVenue.name : ''} /></Field>
+              <Field id="v-name" label="Venue name"><input id="v-name" className="field-input" defaultValue={conf.slug === 'icicgb-26' ? exampleVenue.name : ''} /></Field>
               <Field id="v-city" label="City"><input id="v-city" className="field-input" defaultValue={conf.city} /></Field>
-              <div className="sm:col-span-2"><Field id="v-addr" label="Address"><textarea id="v-addr" rows={4} className="field-input" defaultValue={slug === 'icicgb-26' ? exampleVenue.lines.join('\n') : ''} /></Field></div>
+              <div className="sm:col-span-2"><Field id="v-addr" label="Address"><textarea id="v-addr" rows={4} className="field-input" defaultValue={conf.slug === 'icicgb-26' ? exampleVenue.lines.join('\n') : ''} /></Field></div>
               <Field id="v-map" label="Map link"><input id="v-map" className="field-input" placeholder="https://maps.google.com/…" /></Field>
               <Field id="v-tent" label="Venue status"><select id="v-tent" className="field-input"><option>Tentative</option><option>Confirmed</option></select></Field>
             </div>

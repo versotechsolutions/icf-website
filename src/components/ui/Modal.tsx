@@ -1,9 +1,23 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { cn } from '@/utils/cn';
 import { X } from 'lucide-react';
 
 /** Native <dialog> modal: focus trapping, Esc to close and backdrop handled by the browser. */
-export function Modal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  size = 'md',
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+  size?: 'md' | 'lg';
+}) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const d = ref.current;
@@ -17,11 +31,14 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
       ref={ref}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      aria-labelledby="modal-title"
-      className="m-auto w-[min(92vw,34rem)] rounded-[var(--radius-lg)] p-0 text-ink shadow-[var(--shadow-panel)] backdrop:bg-navy-950/60"
+      aria-labelledby={titleId}
+      className={cn(
+        'm-auto rounded-[var(--radius-lg)] p-0 text-ink shadow-[var(--shadow-panel)] backdrop:bg-navy-950/60',
+        size === 'lg' ? 'w-[min(94vw,64rem)]' : 'w-[min(92vw,34rem)]',
+      )}
     >
       <div className="flex items-start justify-between gap-4 border-b border-rule px-6 py-4">
-        <h2 id="modal-title" className="text-h3">
+        <h2 id={titleId} className="text-h3">
           {title}
         </h2>
         <button onClick={onClose} className="rounded p-1 text-muted hover:bg-mist hover:text-navy-900" aria-label="Close">

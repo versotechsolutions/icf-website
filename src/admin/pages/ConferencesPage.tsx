@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Pencil, Plus, Search, Star, Trash2 } from 'lucide-react';
-import { sampleConferences } from '@/data/conferences.sample';
+import { FileSpreadsheet, Pencil, Plus, Search, Star, Trash2 } from 'lucide-react';
 import { countryByCode } from '@/data/countries';
 import { topicBySlug } from '@/data/topics';
 import { formatDateRange } from '@/utils/format';
@@ -9,16 +8,18 @@ import { Button, buttonClass } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { AdminPageHeader, Panel, SegmentedFilter, StatusBadge, Table, td, th } from '../components/AdminUI';
 import { useToast } from '../components/Toast';
-import type { Conference } from '@/types';
+import { useAdminData, type AdminConference } from '../AdminData';
+import { BulkUploadDialog } from '../components/BulkUploadDialog';
 
 const statuses = ['All', 'Published', 'Draft', 'Pending', 'Completed'] as const;
 
 export default function ConferencesPage() {
   const toast = useToast();
-  const [rows, setRows] = useState<Conference[]>(sampleConferences);
+  const { conferences: rows, removeConference } = useAdminData();
+  const [bulkOpen, setBulkOpen] = useState(false);
   const [q, setQ] = useState('');
   const [status, setStatus] = useState<(typeof statuses)[number]>('All');
-  const [confirm, setConfirm] = useState<Conference | null>(null);
+  const [confirm, setConfirm] = useState<AdminConference | null>(null);
 
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -29,11 +30,16 @@ export default function ConferencesPage() {
     <>
       <AdminPageHeader
         title="Conference management"
-        intro="Create, edit and remove conferences, including dates, venue, fees and deadlines."
+        intro="Create, edit and remove conferences, one at a time or up to 10 at once from an Excel file."
         actions={
-          <Link to="/admin/conferences/new" className={buttonClass('primary', 'md')}>
-            <Plus aria-hidden className="size-4" /> Add conference
-          </Link>
+          <>
+            <Button variant="secondary" onClick={() => setBulkOpen(true)}>
+              <FileSpreadsheet aria-hidden className="size-4" /> Bulk upload (Excel)
+            </Button>
+            <Link to="/admin/conferences/new" className={buttonClass('primary', 'md')}>
+              <Plus aria-hidden className="size-4" /> Add conference
+            </Link>
+          </>
         }
       />
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -65,6 +71,7 @@ export default function ConferencesPage() {
                   <span className="flex items-center gap-1.5 font-semibold text-navy-900">
                     {c.acronym}
                     {c.featured && <Star aria-label="Featured" className="size-3.5 fill-gold-400 text-gold-500" />}
+                    {c.addedInSession && <span className="rounded bg-globe-100 px-1.5 py-0.5 text-[0.7rem] font-semibold text-globe-700">New</span>}
                   </span>
                   <span className="block max-w-xs truncate text-xs text-muted">{c.title}</span>
                 </td>
@@ -113,7 +120,7 @@ export default function ConferencesPage() {
           <Button
             className="!bg-danger hover:!bg-danger/90"
             onClick={() => {
-              setRows((r) => r.filter((x) => x.id !== confirm!.id));
+              removeConference(confirm!.id);
               toast(`${confirm!.acronym} deleted from this demo session.`);
               setConfirm(null);
             }}
@@ -122,6 +129,7 @@ export default function ConferencesPage() {
           </Button>
         </div>
       </Modal>
+      <BulkUploadDialog open={bulkOpen} onClose={() => setBulkOpen(false)} />
     </>
   );
 }

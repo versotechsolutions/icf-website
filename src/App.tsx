@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ReactNode } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { SiteLayout } from '@/layouts/SiteLayout';
 import HomePage from '@/pages/HomePage';
 import AboutPage from '@/pages/AboutPage';
@@ -32,7 +32,6 @@ const AdminPayments = lazy(() => import('@/admin/pages/PaymentsPage'));
 const AdminEmails = lazy(() => import('@/admin/pages/EmailsPage'));
 const AdminReports = lazy(() => import('@/admin/pages/ReportsPage'));
 const AdminContent = lazy(() => import('@/admin/pages/ContentPage'));
-const AdminAccess = lazy(() => import('@/admin/pages/AccessPage'));
 
 const load = (node: ReactNode) => <Suspense fallback={<div className="p-10 text-muted">Loading…</div>}>{node}</Suspense>;
 
@@ -76,7 +75,8 @@ export const router = createBrowserRouter([
       { path: 'emails', element: load(<AdminEmails />) },
       { path: 'reports', element: load(<AdminReports />) },
       { path: 'content', element: load(<AdminContent />) },
-      { path: 'access', element: load(<AdminAccess />) },
+      // Unknown admin addresses (including the removed /admin/access) go back to the dashboard.
+      { path: '*', element: <Navigate to="/admin" replace /> },
     ],
   },
 ]);

@@ -62,18 +62,17 @@ All client copy is centralised in `src/data/`, so it can later be replaced by CM
 
 ## Admin panel (frontend UI only)
 
-Scope follows the approved ₹85,000 project scope (8 modules), **not** the full feature list in `ICF Admin Dashboard.docx`.
+Scope follows the approved ₹85,000 project scope, **not** the full feature list in `ICF Admin Dashboard.docx`. One common admin login; the Admin access module (roles and permissions) was removed at the client's request, leaving 7 modules.
 
 | Module / route | Source items used from ICF Admin Dashboard.docx |
 |---|---|
 | Login `/admin/login` | Sidebar mock-up image (branding). UI only; no authentication. |
 | Dashboard `/admin` | "Dashboard Overview": total conferences; published/draft/pending; upcoming/completed; registrations; successful payments. Total revenue is omitted because advanced revenue analytics are excluded. |
-| Conference management `/admin/conferences`, `/new`, `/:id/edit` | "Conference Management": create, edit, delete; title, date, venue, description; fees and deadlines. "Single Events Upload" fields: category, type, dates, time, timezone, venue, city, state, country, image, tags, status, featured. |
+| Conference management `/admin/conferences`, `/new`, `/:id/edit` | "Conference Management": create, edit, delete; title, date, venue, description; fees and deadlines. "Single Events Upload" fields: category, type, dates, time, timezone, venue, city, state, country, image, tags, status, featured. "Bulk Event Upload": Excel template and upload of up to 10 conferences per file, using the same fields. |
 | Registration management `/admin/registrations` | "Registration & Participants": participant details, registration categories, status, export to CSV |
 | Payment status `/admin/payments` | "Payment Management": Indian/international, successful/pending/failed, transaction IDs and registration references, verify bank transfers (UI) |
 | Email notifications `/admin/emails` | "Emails…": registration confirmations and reminders; email templates |
 | Reports `/admin/reports` | "Reports & Import/Export": registration and payment report downloads; conference-wise statistics |
 | Conference content `/admin/content` | "Content Update Dashboard" fields; "Website Content Management"; "SEO Dashboard" fields (meta title/description/keywords, OG, Twitter card, canonical, robots); gallery uploads ("Dash Board – need to uploaded file"); venue ("Need to create a dash bord") |
-| Admin access `/admin/access` | "Users & Enquiries → Control user permissions and access" |
 
 **Not built (outside the agreed scope):** paper submission review, reviewer assignment and accept/reject workflow; certificate generation; invitation-letter generation; bulk Excel import; advanced revenue analytics; enquiries inbox; country management CRUD.

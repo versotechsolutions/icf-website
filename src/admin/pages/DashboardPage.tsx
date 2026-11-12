@@ -1,18 +1,19 @@
 import { Link } from 'react-router-dom';
-import { CalendarCheck2, CalendarRange, CreditCard, FileClock, Plus, Users } from 'lucide-react';
+import { CalendarCheck2, CalendarRange, CreditCard, FileClock, Users } from 'lucide-react';
 import { sampleConferences } from '@/data/conferences.sample';
 import { adminPayments, adminRegistrations } from '@/data/admin.sample';
 import { countryByCode } from '@/data/countries';
 import { formatDateRange, formatMonthKey } from '@/utils/format';
-import { buttonClass } from '@/components/ui/Button';
 import { AdminPageHeader, Panel, StatCard, StatusBadge, Table, td, th } from '../components/AdminUI';
-import { ColumnChart } from '../components/Charts';
+import { AreaChart } from '../components/Charts';
+import { useAdminData } from '../AdminData';
 
 export default function DashboardPage() {
+  const { conferences } = useAdminData();
   const today = new Date().toISOString().slice(0, 10);
-  const by = (s: string) => sampleConferences.filter((c) => c.status === s).length;
-  const upcoming = sampleConferences.filter((c) => c.status === 'Published' && c.startDate >= today);
-  const completed = sampleConferences.filter((c) => c.status === 'Completed' || c.endDate < today).length;
+  const by = (s: string) => conferences.filter((c) => c.status === s).length;
+  const upcoming = conferences.filter((c) => c.status === 'Published' && c.startDate >= today);
+  const completed = conferences.filter((c) => c.status === 'Completed' || c.endDate < today).length;
   const successful = adminPayments.filter((p) => p.status === 'Successful').length;
   const pendingPay = adminPayments.filter((p) => p.status === 'Pending').length;
 
@@ -24,14 +25,9 @@ export default function DashboardPage() {
       <AdminPageHeader
         title="Dashboard"
         intro="An overview of conferences, registrations and payments."
-        actions={
-          <Link to="/admin/conferences/new" className={buttonClass('primary', 'md')}>
-            <Plus aria-hidden className="size-4" /> Add conference
-          </Link>
-        }
       />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total conferences" value={sampleConferences.length} note={`${by('Published')} published, ${by('Draft')} draft, ${by('Pending')} pending`} icon={CalendarRange} />
+        <StatCard label="Total conferences" value={conferences.length} note={`${by('Published')} published, ${by('Draft')} draft, ${by('Pending')} pending`} icon={CalendarRange} />
         <StatCard label="Upcoming conferences" value={upcoming.length} note={`${completed} completed`} icon={CalendarCheck2} />
         <StatCard label="Registrations" value={adminRegistrations.length} note={`${adminRegistrations.filter((r) => r.status === 'Awaiting payment').length} awaiting payment`} icon={Users} />
         <StatCard label="Successful payments" value={successful} note={`${pendingPay} pending verification`} icon={CreditCard} />
@@ -39,7 +35,7 @@ export default function DashboardPage() {
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <Panel title="Registrations per month">
-          <ColumnChart data={perMonth} valueLabel="Registrations" title="New registrations by month, May to October 2026 (sample data)" />
+          <AreaChart data={perMonth} valueLabel="Registrations" title="New registrations by month, May to October 2026 (sample data)" />
         </Panel>
         <Panel title="Next conferences" action={<Link to="/admin/conferences" className="text-sm font-semibold text-globe-700 hover:underline">All conferences</Link>} bodyClass="p-0">
           <ul className="divide-y divide-rule">
@@ -78,7 +74,7 @@ export default function DashboardPage() {
                   {r.name}
                   <span className="block text-xs text-muted">{r.country}</span>
                 </td>
-                <td className={td}>{sampleConferences.find((c) => c.slug === r.conferenceSlug)?.acronym}</td>
+                <td className={td}>{(conferences.find((c) => c.slug === r.conferenceSlug) ?? sampleConferences.find((c) => c.slug === r.conferenceSlug))?.acronym}</td>
                 <td className={td}>{r.category}</td>
                 <td className={`${td} tabular-nums`}>{r.date}</td>
                 <td className={td}>

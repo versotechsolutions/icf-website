@@ -1,6 +1,6 @@
 # Phase 1 build and testing report
 
-**Date:** 3 November 2026
+**Date:** 3 November 2026 (admin integration tests added 12 November 2026)
 **Environment:** Windows 11, Node 24.16, Chrome (headless, via puppeteer-core)
 **Build tested:** the production build (`npm run build` + `npm run preview`)
 
@@ -16,11 +16,11 @@
 
 ## 2. Route and console check (`npm run screenshots`)
 
-34 routes × 2 viewports (desktop 1440×900, mobile 390×844 @2x) = **68 page loads**. Routes covered: every public page, country and topic listing variants, an empty-result country, two conference detail pages, a policy page, the 404 page, the admin login and all 10 admin screens.
+34 routes × 2 viewports (desktop 1440×900, mobile 390×844 @2x) = **68 page loads**. Routes covered: every public page, country and topic listing variants, an empty-result country, two conference detail pages, a policy page, the 404 page, the admin login and the admin screens (the Admin access screen was later removed; see section 3).
 
 **Result:** 68/68 loaded with **0 console errors, 0 page errors and 0 failed requests.**
 
-## 3. Interaction tests (`npm run test:smoke`), 26/26 passed
+## 3. Interaction tests (`npm run test:smoke`), 33/33 passed
 
 | # | Test |
 |---|---|
@@ -48,6 +48,13 @@
 | 17 | Admin: delete conference with confirmation removes the row |
 | 18 | Admin: conference form rejects an end date before the start date |
 | 19 | Admin: "Mark received" on a pending bank transfer updates status |
+| 19a | Admin sidebar lists exactly the seven modules; each opens its page and is highlighted as current |
+| 19b | No role management: `/admin/access` redirects to the dashboard; no role, permission or invite UI anywhere |
+| 19c | Manual Add conference: the new record appears in the list and the dashboard total updates |
+| 19d | Excel template downloads with the 21 column headers and an Instructions sheet |
+| 19e | Excel upload with 11 records is rejected (10-record limit) |
+| 19f | Non-Excel file is rejected |
+| 19g | Excel preview flags missing fields, bad dates, end-before-start, unknown subject, duplicate of an existing conference and duplicate within the file; Cancel leaves the list unchanged; Confirm imports only the valid rows and shows the summary |
 | 20 | **Internal link crawl:** 48 internal URLs reached from 8 entry pages, 0 resolve to the 404 page |
 | 21 | No console errors during the whole run |
 

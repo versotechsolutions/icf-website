@@ -41,9 +41,11 @@ npm run assets                                   # regenerate optimised logo/fav
 | For participants | `/registration`, `/paper-submission`, `/invitation-letter`, `/awards` |
 | Conference information | `/call-for-papers`, `/programme`, `/faq`, `/venue`, `/travel`, `/video-conferencing` |
 | Other | `/gallery`, `/contact`, `/policies/:slug` (privacy, terms, disclaimer, refund-cancellation), 404 |
-| Admin (UI only) | `/admin/login`, `/admin` (dashboard), `/admin/conferences` (+ `/new`, `/:id/edit`), `/admin/registrations`, `/admin/payments`, `/admin/emails`, `/admin/reports`, `/admin/content`, `/admin/access` |
+| Admin (UI only) | `/admin/login`, `/admin` (dashboard), `/admin/conferences` (+ `/new`, `/:id/edit`), `/admin/registrations`, `/admin/payments`, `/admin/emails`, `/admin/reports`, `/admin/content` |
 
-The admin login accepts any valid-looking email and password in this phase. It is reachable from the footer "Admin" link.
+The admin login accepts any valid-looking email and password in this phase. It is reachable from the footer "Admin" link. There is one common admin login: no roles or permission levels.
+
+Conference management supports manual entry and **Excel bulk upload** (template download, up to 10 records per file, validation, duplicate checks, preview, confirm/cancel, import summary). Excel files are read and written in the browser with [SheetJS](https://sheetjs.com) 0.20.3, installed from the official SheetJS CDN (the npm registry copy is outdated) and loaded only when the upload dialog is used. Added, edited, imported and deleted conferences are held in memory for the admin session only.
 
 ## Project structure
 
@@ -54,7 +56,7 @@ src/
   components/      ui/ (design-system primitives), forms/, layout/, conference/, home/
   layouts/         SiteLayout, EventInfoLayout (content + Quick links)
   pages/           one file per public page
-  admin/           AdminLayout, components/, pages/ (8 modules + login)
+  admin/           AdminLayout, components/, pages/ (7 modules + login), AdminData (shared demo state), bulkImport (Excel upload)
   data/            client copy (content.ts, topics.ts, site.ts), countries, SAMPLE data files
   services/        data-access layer (conferences.ts): swap for API calls in Phase 2
   hooks/           usePageMeta, useForm, useOnClickOutside

@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ImagePlus } from 'lucide-react';
-import { sampleConferences } from '@/data/conferences.sample';
 import { registrationFees } from '@/data/content';
-import { countryByCode } from '@/data/countries';
+import { countries, countryByCode } from '@/data/countries';
 import { topics } from '@/data/topics';
 import { useForm } from '@/hooks/useForm';
 import { required, selectRequired, type Rule } from '@/utils/validation';
@@ -12,6 +11,8 @@ import { CountryCombobox } from '@/components/forms/CountryCombobox';
 import { Button } from '@/components/ui/Button';
 import { AdminPageHeader, Panel } from '../components/AdminUI';
 import { useToast } from '../components/Toast';
+import { slugify, useAdminData, type AdminConference } from '../AdminData';
+import type { ConferenceMode, ConferenceStatus } from '@/types';
 
 const endAfterStart: Rule = (v, all) => (v && all.startDate && v < all.startDate ? 'End date must be on or after the start date.' : null);
 const deadlineBeforeStart: Rule = (v, all) => (v && all.startDate && v > all.startDate ? 'Deadline must be before the conference starts.' : null);
@@ -21,36 +22,41 @@ export default function ConferenceFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-  const existing = sampleConferences.find((c) => c.id === id);
+  const { conferences, addConferences, updateConference } = useAdminData();
+  const existing = conferences.find((c) => c.id === id);
+  const d = existing?.details ?? {};
   const [image, setImage] = useState<string | null>(null);
+
+  const uniqueAcronym: Rule = (v) =>
+    v.trim() && conferences.some((c) => c.id !== existing?.id && c.acronym.toLowerCase() === v.trim().toLowerCase()) ? 'Another conference already uses this short form.' : null;
 
   const form = useForm(
     {
       title: existing?.title ?? '',
       acronym: existing?.acronym ?? '',
       topic: existing?.topicSlug ?? '',
-      eventType: 'Conference',
+      eventType: d.eventType ?? 'Conference',
       mode: existing?.mode ?? 'In person',
       startDate: existing?.startDate ?? '',
       endDate: existing?.endDate ?? '',
-      time: '09:00',
-      timezone: 'Asia/Kolkata',
-      venueName: '',
-      venueAddress: '',
+      time: d.time || '09:00',
+      timezone: d.timezone || 'Asia/Kolkata',
+      venueName: d.venueName ?? '',
+      venueAddress: d.venueAddress ?? '',
       city: existing?.city ?? '',
-      state: '',
+      state: d.state ?? '',
       country: existing ? (countryByCode(existing.countryCode)?.name ?? '') : '',
-      description: '',
-      earlyDeadline: '',
-      finalDeadline: '',
-      submissionDeadline: '',
-      tags: '',
+      description: d.description ?? '',
+      earlyDeadline: d.earlyDeadline ?? '',
+      finalDeadline: d.finalDeadline ?? '',
+      submissionDeadline: d.submissionDeadline ?? '',
+      tags: d.tags ?? '',
       status: existing?.status ?? 'Draft',
       featured: String(existing?.featured ?? false),
     },
     {
       title: [required('the conference title')],
-      acronym: [required('the short form, for example ICICGB-26')],
+      acronym: [required('the short form, for example ICICGB-26'), uniqueAcronym],
       topic: [selectRequired('a subject area')],
       eventType: [],
       mode: [],
@@ -73,10 +79,40 @@ export default function ConferenceFormPage() {
     },
   );
 
-  const save = () => {
-    toast(`${form.values.acronym} ${existing ? 'updated' : 'created'} in this demo session (not saved).`);
+  const save = (v: typeof form.values) => {
+    const record: AdminConference = {
+      id: existing?.id ?? `new-${Date.now().toString(36)}`,
+      slug: existing?.slug ?? slugify(v.acronym),
+      title: v.title.trim(),
+      acronym: v.acronym.trim().toUpperCase(),
+      topicSlug: v.topic,
+      countryCode: countries.find((c) => c.name === v.country)?.code ?? existing?.countryCode ?? '',
+      city: v.city.trim(),
+      startDate: v.startDate,
+      endDate: v.endDate,
+      mode: v.mode as ConferenceMode,
+      status: v.status as ConferenceStatus,
+      featured: v.featured === 'true',
+      isSample: true,
+      addedInSession: existing ? existing.addedInSession : true,
+      details: { ...v },
+    };
+    if (existing) updateConference(existing.id, record);
+    else addConferences([record]);
+    toast(`${record.acronym} ${existing ? 'updated' : 'created'} in this demo session (not saved permanently).`);
     navigate('/admin/conferences');
   };
+
+  if (id && !existing) {
+    return (
+      <>
+        <AdminPageHeader title="Conference not found" intro="This conference is not in the current list. It may have been deleted in this demo session." />
+        <Link to="/admin/conferences" className="inline-flex items-center gap-1.5 font-semibold text-globe-700 hover:underline">
+          <ArrowLeft aria-hidden className="size-4" /> Back to conferences
+        </Link>
+      </>
+    );
+  }
 
   return (
     <>

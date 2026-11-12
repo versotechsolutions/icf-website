@@ -129,18 +129,3 @@ export const emailLog = [
   { id: 4, template: 'Conference reminder', to: '27 participants (ICICGB-26)', date: '2026-11-01 08:00', status: 'Scheduled' },
   { id: 5, template: 'Payment confirmation', to: adminRegistrations[4].email, date: '2026-10-31 15:22', status: 'Delivered' },
 ];
-
-export type AdminRole = 'Super admin' | 'Conference manager' | 'Viewer';
-export const adminUsers = [
-  { id: 'u1', name: 'ICF Administrator', email: 'admin@internationalconferenceforum.com', role: 'Super admin' as AdminRole, status: 'Active', lastActive: 'Today, 09:12' },
-  { id: 'u2', name: 'Conference Coordinator', email: 'coordinator@example.com', role: 'Conference manager' as AdminRole, status: 'Active', lastActive: 'Yesterday, 18:40' },
-  { id: 'u3', name: 'Finance Reviewer', email: 'finance@example.com', role: 'Viewer' as AdminRole, status: 'Invited', lastActive: 'Never' },
-];
-
-export const adminModules = ['Dashboard', 'Conferences', 'Registrations', 'Payments', 'Email notifications', 'Reports', 'Conference content', 'Admin access'] as const;
-
-export const rolePermissions: Record<AdminRole, Record<(typeof adminModules)[number], 'Full' | 'Edit' | 'View' | 'None'>> = {
-  'Super admin': { Dashboard: 'Full', Conferences: 'Full', Registrations: 'Full', Payments: 'Full', 'Email notifications': 'Full', Reports: 'Full', 'Conference content': 'Full', 'Admin access': 'Full' },
-  'Conference manager': { Dashboard: 'View', Conferences: 'Edit', Registrations: 'Edit', Payments: 'View', 'Email notifications': 'Edit', Reports: 'View', 'Conference content': 'Edit', 'Admin access': 'None' },
-  Viewer: { Dashboard: 'View', Conferences: 'View', Registrations: 'View', Payments: 'View', 'Email notifications': 'None', Reports: 'View', 'Conference content': 'None', 'Admin access': 'None' },
-};

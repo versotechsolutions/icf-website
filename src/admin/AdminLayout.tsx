@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BarChart3, CalendarRange, CreditCard, ExternalLink, FileEdit, LayoutDashboard, LogOut, Mail, Menu, ShieldCheck, Users, X } from 'lucide-react';
+import { BarChart3, CalendarRange, CreditCard, ExternalLink, FileEdit, LayoutDashboard, LogOut, Mail, Menu, Users, X } from 'lucide-react';
 import { ToastProvider } from './components/Toast';
+import { AdminDataProvider } from './AdminData';
 import { cn } from '@/utils/cn';
 
-/** The eight modules in the approved Phase scope. */
+/** Admin modules in the agreed scope. One common admin login: no roles or permission levels. */
 export const adminNav = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/conferences', label: 'Conferences', icon: CalendarRange },
@@ -13,7 +14,6 @@ export const adminNav = [
   { to: '/admin/emails', label: 'Email notifications', icon: Mail },
   { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
   { to: '/admin/content', label: 'Conference content', icon: FileEdit },
-  { to: '/admin/access', label: 'Admin access', icon: ShieldCheck },
 ];
 
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
@@ -75,48 +75,49 @@ export default function AdminLayout() {
 
   return (
     <ToastProvider>
-      <div className="min-h-dvh bg-[#f5f7fa] lg:grid lg:grid-cols-[16rem_1fr]">
-        <aside className="hidden bg-navy-950 lg:block">
-          <div className="sticky top-0 h-dvh">
-            <Sidebar />
-          </div>
-        </aside>
-        {open && (
-          <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Admin navigation">
-            <div className="absolute inset-0 bg-navy-950/60" onClick={() => setOpen(false)} />
-            <div className="absolute inset-y-0 left-0 w-72">
-              <Sidebar onNavigate={() => setOpen(false)} />
+      <AdminDataProvider>
+        <div className="min-h-dvh bg-[#f5f7fa] lg:grid lg:grid-cols-[16rem_1fr]">
+          <aside className="hidden bg-navy-950 lg:block">
+            <div className="sticky top-0 h-dvh">
+              <Sidebar />
             </div>
-            <button onClick={() => setOpen(false)} className="absolute left-[18.5rem] top-4 rounded bg-white p-2" aria-label="Close navigation">
-              <X className="size-5" />
-            </button>
-          </div>
-        )}
-        <div className="min-w-0">
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-rule bg-white px-4 sm:px-8">
-            <div className="flex items-center gap-3">
-              <button onClick={() => setOpen(true)} className="rounded p-2 text-navy-900 hover:bg-mist lg:hidden" aria-label="Open navigation">
-                <Menu className="size-5" />
+          </aside>
+          {open && (
+            <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Admin navigation">
+              <div className="absolute inset-0 bg-navy-950/60" onClick={() => setOpen(false)} />
+              <div className="absolute inset-y-0 left-0 w-72">
+                <Sidebar onNavigate={() => setOpen(false)} />
+              </div>
+              <button onClick={() => setOpen(false)} className="absolute left-[18.5rem] top-4 rounded bg-white p-2" aria-label="Close navigation">
+                <X className="size-5" />
               </button>
-              <span className="rounded-full border border-dashed border-gold-500/70 bg-gold-50 px-3 py-1 text-xs font-semibold text-gold-700">
-                Demo mode: sample data, no changes are saved
-              </span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="hidden text-right text-sm leading-tight sm:block">
-                <span className="block font-semibold text-navy-900">ICF Administrator</span>
-                <span className="block text-muted">Super admin</span>
-              </span>
-              <span className="inline-flex size-9 items-center justify-center rounded-full bg-navy-900 text-sm font-semibold text-gold-300" aria-hidden>
-                IA
-              </span>
-            </div>
-          </header>
-          <main id="main" className="px-4 py-8 sm:px-8">
-            <Outlet />
-          </main>
+          )}
+          <div className="min-w-0">
+            <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-rule bg-white px-4 sm:px-8">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setOpen(true)} className="rounded p-2 text-navy-900 hover:bg-mist lg:hidden" aria-label="Open navigation">
+                  <Menu className="size-5" />
+                </button>
+                <span className="rounded-full border border-dashed border-gold-500/70 bg-gold-50 px-3 py-1 text-xs font-semibold text-gold-700">
+                  Demo mode: sample data, no changes are saved
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="hidden text-right text-sm leading-tight sm:block">
+                  <span className="block font-semibold text-navy-900">ICF Administrator</span>
+                </span>
+                <span className="inline-flex size-9 items-center justify-center rounded-full bg-navy-900 text-sm font-semibold text-gold-300" aria-hidden>
+                  IA
+                </span>
+              </div>
+            </header>
+            <main id="main" className="px-4 py-8 sm:px-8">
+              <Outlet />
+            </main>
+          </div>
         </div>
-      </div>
+      </AdminDataProvider>
     </ToastProvider>
   );
 }

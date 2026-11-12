@@ -1,6 +1,10 @@
 // End-to-end smoke test of frontend interactions (no backend involved).
 // Usage: node scripts/smoke-test.mjs [baseUrl]   (run `npm run build && npm run preview` first)
 import puppeteer from 'puppeteer-core';
+import * as XLSX from 'xlsx';
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const base = process.argv[2] ?? 'http://localhost:4173';
 const browser = await puppeteer.launch({
@@ -347,6 +351,162 @@ await test('Admin payments: mark bank transfer received', async () => {
   const before = (await page.$$('xpath/.//button[contains(., "Mark received")]')).length;
   await btn.click();
   await page.waitForFunction((n) => [...document.querySelectorAll('button')].filter((b) => b.textContent.includes('Mark received')).length === n - 1, {}, before);
+});
+
+// ---- Admin: one common login, seven connected modules, Excel bulk upload ----
+const adminModules = [
+  ['Dashboard', '/admin', 'Dashboard'],
+  ['Conferences', '/admin/conferences', 'Conference management'],
+  ['Registrations', '/admin/registrations', 'Registration management'],
+  ['Payment status', '/admin/payments', 'Payment status'],
+  ['Email notifications', '/admin/emails', 'Email notifications'],
+  ['Reports', '/admin/reports', 'Reports'],
+  ['Conference content', '/admin/content', 'Conference content'],
+];
+const sidebarLink = async (label) => (await page.$$(`xpath/.//nav[@aria-label="Admin"]//a[normalize-space(.)="${label}"]`))[0];
+
+await test('Admin sidebar: seven modules, each opens its page and is highlighted', async () => {
+  await go('/admin');
+  const labels = await page.$$eval('nav[aria-label=Admin] a', (as) => as.map((a) => a.textContent.trim()));
+  assert(JSON.stringify(labels) === JSON.stringify(adminModules.map((m) => m[0])), `sidebar items: ${labels.join(', ')}`);
+  for (const [label, p, h1] of [...adminModules.slice(1), adminModules[0]]) {
+    await (await sidebarLink(label)).click();
+    await page.waitForFunction((x) => location.pathname === x, {}, p);
+    await page.waitForFunction((t) => document.querySelector('main h1')?.textContent === t, {}, h1);
+    const current = await page.$eval('nav[aria-label=Admin] a[aria-current=page]', (a) => a.textContent.trim());
+    assert(current === label, `active item is "${current}" on ${p}`);
+  }
+});
+
+await test('Admin access and roles removed; old address redirects to dashboard', async () => {
+  await go('/admin/access');
+  await page.waitForFunction(() => location.pathname === '/admin');
+  const body = await page.$eval('body', (b) => b.innerText);
+  for (const word of ['Admin access', 'Super admin', 'Role permissions', 'Invite admin', 'Add conference']) assert(!body.includes(word), `"${word}" still shown`);
+});
+
+const setInputValue = (sel, v) =>
+  page.$eval(
+    sel,
+    (el, val) => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(el, val);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+    v,
+  );
+const totalConferences = () =>
+  page.$$eval('main p', (ps) => {
+    const label = ps.find((p) => p.textContent === 'Total conferences');
+    return label ? parseInt(label.parentElement.nextElementSibling.textContent, 10) : NaN;
+  });
+
+await test('Admin: manual conference creation appears in the list and dashboard', async () => {
+  await go('/admin/conferences/new');
+  await page.type('#f-title', 'Smoke Test Conference on Law');
+  await page.type('#f-acronym', 'STCL-27');
+  await page.select('#f-topic', 'law');
+  await setInputValue('#f-startDate', '2027-06-10');
+  await setInputValue('#f-endDate', '2027-06-11');
+  await page.type('#f-city', 'Chennai');
+  await page.type('#f-country', 'India');
+  await page.keyboard.press('Enter');
+  await page.type('#f-description', 'Created by the smoke test.');
+  const [submit] = await page.$$('xpath/.//button[contains(., "Create conference")]');
+  await submit.click();
+  await page.waitForFunction(() => location.pathname === '/admin/conferences');
+  await page.waitForFunction(() => document.querySelector('tbody')?.innerText.includes('STCL-27'));
+  await (await sidebarLink('Dashboard')).click();
+  await page.waitForFunction(() => document.querySelector('main h1')?.textContent === 'Dashboard');
+  const n = await totalConferences();
+  assert(n === 28, `dashboard total is ${n}, expected 28`);
+});
+
+const tmp = mkdtempSync(join(tmpdir(), 'icf-smoke-'));
+const header = ['Conference Title', 'Short Form', 'Subject Area', 'Event Type', 'Format', 'Start Date', 'End Date', 'Start Time', 'Time Zone', 'Venue Name', 'Venue Address', 'City', 'State / Region', 'Country', 'Description', 'Early Registration Deadline', 'Final Registration Deadline', 'Paper Submission Deadline', 'Tags', 'Status', 'Featured'];
+const row = (o) => header.map((h) => o[h] ?? '');
+const baseRow = { 'Subject Area': 'Education', 'Start Date': '2027-08-10', 'End Date': '2027-08-11', City: 'Kyoto', Country: 'Japan', Description: 'Demo' };
+const writeBook = (name, rows) => {
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([header, ...rows]), 'Conferences');
+  const file = join(tmp, name);
+  writeFileSync(file, XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }));
+  return file;
+};
+const openBulk = async (reload = true) => {
+  if (reload) await go('/admin/conferences');
+  const [btn] = await page.$$('xpath/.//button[contains(., "Bulk upload (Excel)")]');
+  await btn.click();
+  await page.waitForFunction(() => document.querySelector('dialog[open]'));
+};
+const upload = async (file) => (await page.$('#bulk-file')).uploadFile(file);
+const dialogText = () => page.$eval('dialog[open]', (d) => d.innerText);
+
+await test('Admin bulk upload: template downloads with headers and instructions', async () => {
+  await openBulk();
+  const cdp = await page.createCDPSession();
+  await cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: tmp });
+  const [btn] = await page.$$('xpath/.//dialog[@open]//button[contains(., "Download Excel template")]');
+  await btn.click();
+  const file = join(tmp, 'icf-conference-upload-template.xlsx');
+  for (let i = 0; i < 50 && !existsSync(file); i++) await sleep(100);
+  assert(existsSync(file), 'template was not downloaded');
+  const wb = XLSX.read(readFileSync(file));
+  assert(wb.SheetNames.join() === 'Conferences,Instructions', `sheets: ${wb.SheetNames}`);
+  const got = XLSX.utils.sheet_to_json(wb.Sheets.Conferences, { header: 1 })[0];
+  assert(JSON.stringify(got) === JSON.stringify(header), 'template header mismatch');
+});
+
+await test('Admin bulk upload: more than 10 records is rejected', async () => {
+  await openBulk();
+  await upload(writeBook('eleven.xlsx', Array.from({ length: 11 }, (_, i) => row({ ...baseRow, 'Conference Title': `Bulk ${i}`, 'Short Form': `BLK-${i}` }))));
+  await page.waitForFunction(() => document.querySelector('#bulk-file-error')?.textContent.includes('The limit is 10'));
+});
+
+await test('Admin bulk upload: wrong file type is rejected', async () => {
+  await openBulk();
+  const csv = join(tmp, 'list.csv');
+  writeFileSync(csv, 'a,b\n1,2');
+  await upload(csv);
+  await page.waitForFunction(() => document.querySelector('#bulk-file-error')?.textContent.includes('.xlsx'));
+});
+
+await test('Admin bulk upload: preview validates, cancel keeps list, confirm imports valid rows', async () => {
+  const file = writeBook('mixed.xlsx', [
+    row({ ...baseRow, 'Conference Title': 'Bulk Education One', 'Short Form': 'BEO-27' }),
+    row({ ...baseRow, 'Conference Title': 'Bulk Education Two', 'Short Form': 'BET-27', Format: 'Online', Status: 'Published', Featured: 'Yes' }),
+    row({ ...baseRow, 'Conference Title': 'Duplicate of existing', 'Short Form': 'ICICGB-26' }),
+    row({ ...baseRow, 'Conference Title': 'Repeat in file', 'Short Form': 'BEO-27' }),
+    row({ ...baseRow, 'Conference Title': 'Bad dates', 'Short Form': 'BAD-27', 'Start Date': '2027-13-40' }),
+    row({ ...baseRow, 'Conference Title': 'Ends before start', 'Short Form': 'EBS-27', 'End Date': '2027-08-01' }),
+    row({ ...baseRow, 'Conference Title': 'Unknown subject', 'Short Form': 'UNK-27', 'Subject Area': 'Astrology' }),
+    row({ 'Conference Title': 'Missing fields', 'Short Form': 'MIS-27' }),
+  ]);
+  await openBulk();
+  const before = (await page.$$('tbody tr')).length;
+  await upload(file);
+  await page.waitForFunction(() => document.querySelector('dialog[open]')?.innerText.includes('2 ready to import'));
+  const preview = await dialogText();
+  for (const msg of ['6 with errors', 'already exists in the conference list', 'is repeated (also on row 2)', 'is not a valid date', 'End Date must be on or after', 'is not one of the ten ICF subject areas', 'City is required']) {
+    assert(preview.includes(msg), `preview missing: ${msg}`);
+  }
+  const [cancel] = await page.$$('xpath/.//dialog[@open]//button[contains(., "Cancel import")]');
+  await cancel.click();
+  await page.waitForFunction(() => !document.querySelector('dialog[open]'));
+  assert((await page.$$('tbody tr')).length === before, 'cancel changed the list');
+
+  await openBulk(false);
+  await upload(file);
+  await page.waitForFunction(() => document.querySelector('dialog[open]')?.innerText.includes('2 ready to import'));
+  const [ok] = await page.$$('xpath/.//dialog[@open]//button[contains(., "Import 2 conferences")]');
+  await ok.click();
+  await page.waitForFunction(() => document.querySelector('dialog[open] h2')?.textContent === 'Import summary');
+  const summary = await dialogText();
+  assert(summary.includes('2 imported') && summary.includes('6 rejected') && summary.includes('Row 4'), 'summary content wrong');
+  const [done] = await page.$$('xpath/.//dialog[@open]//button[normalize-space(.)="Done"]');
+  await done.click();
+  await page.waitForFunction((n) => document.querySelectorAll('tbody tr').length === n + 2, {}, before);
+  const list = await page.$eval('tbody', (t) => t.innerText);
+  assert(list.includes('BEO-27') && list.includes('BET-27') && !list.includes('UNK-27'), 'imported rows not in list');
 });
 
 await test('Every internal link resolves to a real page', async () => {
