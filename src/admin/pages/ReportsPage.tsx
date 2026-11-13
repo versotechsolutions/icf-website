@@ -48,7 +48,7 @@ export default function ReportsPage() {
       />
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <Panel title="Registrations by category">
-          <BarList data={byCategory} valueLabel="Registrations" title={`${regs.length} registrations${conf ? ` for ${acronym(conf)}` : ''} (sample data)`} />
+          <BarList data={byCategory} valueLabel="Registrations" title={`${conf ? `${acronym(conf)}, by` : 'By'} registration category (sample data)`} />
         </Panel>
         <Panel title="Download reports" bodyClass="p-0">
           <ul className="divide-y divide-rule">

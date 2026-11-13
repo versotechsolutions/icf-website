@@ -203,28 +203,48 @@ export function AreaChart({ data, valueLabel, title }: { data: Datum[]; valueLab
   );
 }
 
-/** Horizontal bars for comparing categories with long names. */
+/**
+ * Horizontal bars for comparing categories with long names: slim bars on a light track,
+ * scaled to a rounded-up maximum, each row showing count and share of the total.
+ * Rows highlight on hover; the bar grows in once when the chart appears.
+ */
 export function BarList({ data, valueLabel, title }: { data: Datum[]; valueLabel: string; title: string }) {
   const [table, setTable] = useState(false);
-  const max = Math.max(...data.map((d) => d.value), 1);
+  const total = data.reduce((s, d) => s + d.value, 0);
+  const max = niceMax(Math.max(...data.map((d) => d.value), 1));
+  const pct = (v: number) => (total ? Math.round((v / total) * 100) : 0);
+
   return (
     <figure>
-      <div className="mb-4 flex items-baseline justify-between">
+      <div className="mb-1 flex items-baseline justify-between gap-4">
         <figcaption className="text-sm text-muted">{title}</figcaption>
         <TableToggle show={table} onToggle={() => setTable((t) => !t)} />
       </div>
+      <p className="mb-4 text-sm text-muted">
+        <span className="font-serif text-2xl font-semibold text-navy-900 tabular-nums">{total}</span> {valueLabel.toLowerCase()} in {data.length} categories
+      </p>
       {table ? (
         <DataTable data={data} valueLabel={valueLabel} />
       ) : (
-        <ul className="space-y-3.5">
+        <ul className="-mx-2 space-y-1" aria-label={title}>
           {data.map((d) => (
-            <li key={d.label} className="group" title={`${d.label}: ${d.value} ${valueLabel.toLowerCase()}`}>
-              <div className="mb-1 flex justify-between gap-4 text-sm">
-                <span className="text-ink">{d.label}</span>
-                <span className="font-semibold tabular-nums text-ink">{d.value}</span>
+            <li
+              key={d.label}
+              className="group rounded-[var(--radius-md)] px-2 py-2 transition-colors hover:bg-mist"
+              aria-label={`${d.label}: ${d.value} ${valueLabel.toLowerCase()}, ${pct(d.value)}% of total`}
+            >
+              <div className="mb-1.5 flex items-baseline justify-between gap-4 text-sm" aria-hidden>
+                <span className="font-medium text-ink">{d.label}</span>
+                <span className="whitespace-nowrap tabular-nums">
+                  <span className="font-semibold text-navy-900">{d.value}</span>
+                  <span className="ml-1.5 text-muted">{pct(d.value)}%</span>
+                </span>
               </div>
-              <div className="h-3 rounded-r-[4px] bg-transparent">
-                <div className="h-3 rounded-r-[4px] transition-opacity group-hover:opacity-80" style={{ width: `${(d.value / max) * 100}%`, background: BAR }} />
+              <div className="h-2 overflow-hidden rounded-full bg-navy-50" aria-hidden>
+                <div
+                  className="chart-bar-grow h-full rounded-r-full transition-[filter] group-hover:brightness-90"
+                  style={{ width: `${(d.value / max) * 100}%`, background: BAR }}
+                />
               </div>
             </li>
           ))}
