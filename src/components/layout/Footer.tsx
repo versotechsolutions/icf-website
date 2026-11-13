@@ -49,15 +49,6 @@ export function Footer() {
               </span>
             </li>
             <li className="flex gap-3">
-              <Mail aria-hidden className="mt-1 size-4 shrink-0 text-gold-400" />
-              <span>
-                <a href={`mailto:${site.contact.generalEmail}`} className="text-white hover:underline">
-                  {site.contact.generalEmail}
-                </a>
-                <span className="block text-sm text-white/60">General enquiries</span>
-              </span>
-            </li>
-            <li className="flex gap-3">
               <Phone aria-hidden className="mt-1 size-4 shrink-0 text-gold-400" />
               <a href={site.contact.phoneHref} className="text-white hover:underline">
                 {site.contact.phone}

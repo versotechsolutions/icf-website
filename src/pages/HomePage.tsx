@@ -12,6 +12,7 @@ import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ButtonLink } from '@/components/ui/Button';
 import { Notice } from '@/components/ui/Notice';
 import { ConferenceFinder } from '@/components/home/ConferenceFinder';
+import { EnquiryButton } from '@/components/home/EnquiryButton';
 import { ConferenceRow } from '@/components/conference/ConferenceRow';
 import { TopicIcon } from '@/components/conference/TopicIcon';
 import { cn } from '@/utils/cn';
@@ -305,6 +306,7 @@ export default function HomePage() {
       <PeerReview />
       <Delegates />
       <Partners />
+      <EnquiryButton />
     </>
   );
 }

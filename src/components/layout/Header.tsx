@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { ChevronDown, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
+import { ChevronDown, Mail, Menu, Phone, X } from 'lucide-react';
 import { mainNav, site } from '@/data/site';
 import { useOnClickOutside } from '@/hooks/useOnClickOutside';
 import { Container } from '@/components/ui/Container';
@@ -26,10 +26,6 @@ function UtilityBar() {
             {site.contact.phone}
           </a>
         </div>
-        <span className="hidden items-center gap-1.5 md:inline-flex">
-          <MapPin aria-hidden className="size-3.5 text-gold-400" />
-          {site.contact.city}
-        </span>
       </Container>
     </div>
   );
