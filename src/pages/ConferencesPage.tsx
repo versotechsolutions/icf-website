@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { CalendarX2, SlidersHorizontal, X } from 'lucide-react';
+import { CalendarX2, Loader2, SlidersHorizontal, X } from 'lucide-react';
 import { countries, countryBySlug, popularCountryCodes, countryByCode } from '@/data/countries';
 import { topics, topicBySlug } from '@/data/topics';
 import { conferenceSnapshot, listConferences } from '@/services/conferences';
@@ -11,24 +11,36 @@ import { Notice } from '@/components/ui/Notice';
 import { Pagination } from '@/components/ui/Pagination';
 import { Button } from '@/components/ui/Button';
 import { CountryCombobox } from '@/components/forms/CountryCombobox';
-import { ConferenceRow } from '@/components/conference/ConferenceRow';
+import { ConferenceCard } from '@/components/conference/ConferenceCard';
 import { formatMonthKey } from '@/utils/format';
 import { cn } from '@/utils/cn';
 import type { Conference, Paged } from '@/types';
 
-function Skeleton() {
+const PAGE_SIZE = 9;
+/** After a filter/page change, the new grid rises in no sooner than this (matches the reference page's pacing). */
+const CHANGE_HOLD_MS = 950;
+
+/** "November | 2026" label for a YYYY-MM month key. */
+const monthTabLabel = (key: string) => formatMonthKey(key).replace(/ (\d{4})$/, ' | $1');
+
+function Loading() {
   return (
-    <div aria-hidden className="divide-y divide-rule">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="flex animate-pulse gap-5 py-5">
-          <div className="h-[5.25rem] w-[4.5rem] rounded-[var(--radius-sm)] bg-navy-50" />
-          <div className="flex-1 space-y-3 pt-1">
-            <div className="h-3 w-40 rounded bg-navy-50" />
-            <div className="h-5 w-3/4 rounded bg-navy-50" />
-            <div className="h-3 w-1/2 rounded bg-navy-50" />
+    <div aria-hidden>
+      <div className="flex justify-center pb-6 pt-2">
+        <Loader2 className="size-8 animate-spin text-gold-500" strokeWidth={2.2} />
+      </div>
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+          <div key={i} className="flex animate-pulse gap-4 rounded-[var(--radius-md)] bg-mist p-5">
+            <div className="h-[5.5rem] w-[4.25rem] rounded-[var(--radius-sm)] bg-navy-100/70" />
+            <div className="flex-1 space-y-2.5 pt-1">
+              <div className="h-3.5 w-full rounded bg-navy-100/70" />
+              <div className="h-3.5 w-4/5 rounded bg-navy-100/70" />
+              <div className="mt-6 h-3 w-1/2 rounded bg-navy-100/70" />
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -52,17 +64,27 @@ export default function ConferencesPage() {
 
   useEffect(() => setDraftKeyword(keyword), [keyword]);
 
+  const firstLoad = useRef(true);
   useEffect(() => {
     let live = true;
+    let holdTimer: number | undefined;
     setLoading(true);
-    listConferences({ keyword, topic, month, continent, country: countrySlug, page }).then((r) => {
-      if (live) {
-        setResult(r);
-        setLoading(false);
-      }
+    const started = performance.now();
+    // First load shows results as soon as they arrive; later changes keep the reference page's pause before the new grid rises.
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hold = firstLoad.current || reduce ? 0 : CHANGE_HOLD_MS;
+    firstLoad.current = false;
+    listConferences({ keyword, topic, month, continent, country: countrySlug, page, pageSize: PAGE_SIZE }).then((r) => {
+      holdTimer = window.setTimeout(() => {
+        if (live) {
+          setResult(r);
+          setLoading(false);
+        }
+      }, Math.max(0, hold - (performance.now() - started)));
     });
     return () => {
       live = false;
+      window.clearTimeout(holdTimer);
     };
   }, [keyword, topic, month, continent, countrySlug, page]);
 
@@ -84,6 +106,45 @@ export default function ConferencesPage() {
     navigate(`/conferences${slug ? `/${slug}` : ''}${qs ? `?${qs}` : ''}`);
   };
   const clearAll = () => navigate('/conferences');
+
+  // Month and page changes stay on the results: glide to the month tabs instead of jumping to the page top.
+  const resultsTopRef = useRef<HTMLElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  // While gliding, the cards wait (placeholder shown) so they rise and bounce in only once the list is in view.
+  const [gliding, setGliding] = useState(false);
+  const scrollToResults = () =>
+    new Promise<void>((resolve) => {
+      const el = resultsTopRef.current;
+      if (!el) return resolve();
+      const top = el.getBoundingClientRect().top;
+      if (top >= 0 && top < window.innerHeight * 0.4) return resolve(); // already in view near the top
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) {
+        el.scrollIntoView({ block: 'start' });
+        return resolve();
+      }
+      const done = () => {
+        window.clearTimeout(fallback);
+        window.removeEventListener('scrollend', done);
+        resolve();
+      };
+      const fallback = window.setTimeout(done, 1000); // browsers without the scrollend event
+      window.addEventListener('scrollend', done);
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  const glideToResults = () => {
+    setGliding(true);
+    scrollToResults().then(() => setGliding(false));
+  };
+
+  // Landing on a link that already names a month or page (e.g. ?month=2027-01): glide down to the list.
+  useEffect(() => {
+    if (!params.get('month') && !params.get('page')) return;
+    setGliding(true);
+    // Wait for the layout's scroll-to-top on navigation to run first.
+    const t = window.setTimeout(() => scrollToResults().then(() => setGliding(false)), 250);
+    return () => window.clearTimeout(t);
+  }, []); // run once, on landing
 
   const months = useMemo(() => conferenceSnapshot.months(), []);
   const popular = popularCountryCodes.map((c) => countryByCode(c)!).filter(Boolean);
@@ -159,19 +220,6 @@ export default function ConferencesPage() {
               </Button>
             </div>
             <CountryCombobox label="Country" value={countrySlug ?? ''} onChange={setCountry} placeholder="All countries" options={countries} />
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="flt-month" className="text-[0.92rem] font-semibold text-navy-900">
-                Month
-              </label>
-              <select id="flt-month" className="field-input" value={month} onChange={(e) => setParam('month', e.target.value)}>
-                <option value="">Any month</option>
-                {months.map((m) => (
-                  <option key={m} value={m}>
-                    {formatMonthKey(m)}
-                  </option>
-                ))}
-              </select>
-            </div>
             <fieldset>
               <legend className="mb-2 text-[0.92rem] font-semibold text-navy-900">Conference category</legend>
               <div className="space-y-1">
@@ -191,10 +239,36 @@ export default function ConferencesPage() {
         </div>
 
         {/* Results */}
-        <section aria-labelledby="results-heading" aria-busy={loading}>
+        <section aria-labelledby="results-heading" aria-busy={loading || gliding}>
           <Notice tone="sample">Results below are development sample data. In Phase 2 this list will load from ICF's conference database.</Notice>
-          <div className="mt-6 flex flex-wrap items-baseline justify-between gap-3 border-b-2 border-navy-900 pb-3">
-            <h2 id="results-heading" className="font-serif text-xl" aria-live="polite">
+          <nav ref={resultsTopRef} aria-label="Conferences by month" className="mt-6 border-b border-rule pb-4">
+            <ul className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
+              {['', ...months].map((m) => {
+                const active = month === m;
+                return (
+                  <li key={m || 'all'}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setParam('month', m);
+                        glideToResults();
+                      }}
+                      aria-pressed={active}
+                      data-month={m}
+                      className={cn(
+                        'whitespace-nowrap rounded-[var(--radius-sm)] px-3.5 py-2 text-[0.95rem] font-semibold transition-colors',
+                        active ? 'bg-gold-400 text-navy-950 shadow-[var(--shadow-lift)]' : 'text-navy-900 hover:bg-mist',
+                      )}
+                    >
+                      {m ? monthTabLabel(m) : 'All months'}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+          <div className="mt-5 mb-5 flex flex-wrap items-baseline justify-between gap-3">
+            <h2 id="results-heading" ref={headingRef} tabIndex={-1} className="font-serif text-xl outline-none" aria-live="polite">
               {loading ? 'Loading conferences…' : `${result?.total ?? 0} conference${result?.total === 1 ? '' : 's'} found`}
             </h2>
             {(continent || keyword) && (
@@ -215,9 +289,10 @@ export default function ConferencesPage() {
             )}
           </div>
 
-          {loading && <Skeleton />}
+          {/* First load only; later changes fade the current grid out instead (see below). */}
+          {loading && !result && <Loading />}
 
-          {!loading && result && result.items.length === 0 && (
+          {!loading && !gliding && result && result.items.length === 0 && (
             <div className="flex flex-col items-center py-16 text-center">
               <CalendarX2 aria-hidden className="size-12 text-gold-500" strokeWidth={1.3} />
               <h3 className="mt-5 text-h3">No conferences match these filters</h3>
@@ -228,11 +303,17 @@ export default function ConferencesPage() {
             </div>
           )}
 
-          {!loading && result && result.items.length > 0 && (
-            <>
-              <div className="divide-y divide-rule">
+          {result && result.items.length > 0 && (
+            // Month/page change: the current grid fades out, then the new one rises as one block and settles with a small bounce.
+            <div
+              className={cn(
+                loading || gliding ? 'grid-fade-out pointer-events-none' : 'grid-rise',
+              )}
+              aria-hidden={loading || gliding || undefined}
+            >
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {result.items.map((c) => (
-                  <ConferenceRow key={c.id} c={c} />
+                  <ConferenceCard key={c.id} c={c} />
                 ))}
               </div>
               <div className="mt-10">
@@ -240,10 +321,12 @@ export default function ConferencesPage() {
                   const next = new URLSearchParams(params);
                   next.set('page', String(p));
                   setParams(next);
-                  window.scrollTo({ top: 0 });
+                  glideToResults();
+                  // Keep keyboard focus with the results rather than the page top.
+                  headingRef.current?.focus({ preventScroll: true });
                 }} />
               </div>
-            </>
+            </div>
           )}
         </section>
       </Container>

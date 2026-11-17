@@ -55,7 +55,12 @@ await test('Searchable country combobox navigates to SEO country page', async ()
   await input.type('Jap');
   await page.keyboard.press('Enter');
   await page.waitForFunction(() => location.pathname === '/conferences/japan');
-  await page.waitForFunction(() => /found/.test(document.querySelector('#results-heading')?.textContent ?? ''));
+  // Wait until the Japan results have rendered (every listed conference is in Japan).
+  await page.waitForFunction(() => {
+    const found = /^\d+ conferences? found/.test(document.querySelector('#results-heading')?.textContent ?? '');
+    const cards = [...document.querySelectorAll('section[aria-labelledby=results-heading] article')];
+    return found && cards.length > 0 && cards.every((c) => c.textContent.includes('Japan'));
+  });
   const n = parseInt(await text('#results-heading'), 10);
   assert(n > 0, 'no conferences for Japan');
   assert((await text('h1')) === 'Conferences in Japan', 'country heading missing');
@@ -74,13 +79,18 @@ await test('Pagination moves to page 2', async () => {
   await page.waitForFunction(() => document.querySelector('nav[aria-label=Pagination] [aria-current=page]')?.textContent === '2');
 });
 
-await test('Month filter narrows results', async () => {
+await test('Month tab narrows results', async () => {
   await go('/conferences');
   await page.waitForFunction(() => /found/.test(document.querySelector('#results-heading')?.textContent ?? ''));
   const all = parseInt(await text('#results-heading'), 10);
-  const opt = await page.$eval('#flt-month option:nth-child(2)', (o) => o.value);
-  await page.select('#flt-month', opt);
-  await page.waitForFunction(() => /found/.test(document.querySelector('#results-heading')?.textContent ?? '') && location.search.includes('month='));
+  await page.click('nav[aria-label="Conferences by month"] li:nth-child(2) button');
+  await page.waitForFunction(() => location.search.includes('month='));
+  // Wait for the new results (the heading briefly shows the old count, then "Loading…").
+  await page.waitForFunction(
+    (n) => { const m = (document.querySelector('#results-heading')?.textContent ?? '').match(/^(\d+) conferences? found/); return m && Number(m[1]) !== n; },
+    { timeout: 5000 },
+    all,
+  ).catch(() => {});
   const some = parseInt(await text('#results-heading'), 10);
   assert(some > 0 && some < all, `month filter did not narrow (${all} -> ${some})`);
 });
@@ -291,16 +301,21 @@ await test('Dropdown: touch tap toggles on large touch screens', async () => {
 
 await test('Mobile menu opens, expands a group and navigates', async () => {
   await page.setViewport({ width: 390, height: 844, isMobile: true });
-  await go('/');
-  await page.click('button[aria-controls="mobile-menu"]');
-  await page.waitForSelector('#mobile-menu:not([hidden])');
-  const [grp] = await page.$$('xpath/.//*[@id="mobile-menu"]//button[contains(., "Conferences")]');
-  await grp.click();
-  const [link] = await page.$$('xpath/.//*[@id="mobile-menu"]//a[contains(., "Browse by topic")]');
-  await link.click();
-  await page.waitForFunction(() => location.pathname === '/topics');
-  assert(await page.$('#mobile-menu[hidden]'), 'menu did not close after navigation');
-  await page.setViewport({ width: 1366, height: 900 });
+  try {
+    await go('/');
+    await page.click('button[aria-controls="mobile-menu"]');
+    await page.waitForSelector('#mobile-menu:not([hidden])');
+    const [grp] = await page.$$('xpath/.//*[@id="mobile-menu"]//button[contains(., "Conferences")]');
+    await grp.click();
+    // Let the expand animation finish so the link is in its final position before clicking.
+    await new Promise((r) => setTimeout(r, 700));
+    const [link] = await page.$$('xpath/.//*[@id="mobile-menu"]//a[contains(., "Browse by topic")]');
+    await link.click();
+    await page.waitForFunction(() => location.pathname === '/topics');
+    assert(await page.$('#mobile-menu[hidden]'), 'menu did not close after navigation');
+  } finally {
+    await page.setViewport({ width: 1366, height: 900 });
+  }
 });
 
 await test('Admin login validates then opens dashboard', async () => {

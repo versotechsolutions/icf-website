@@ -28,7 +28,7 @@ export default function PolicyPage() {
           <FileClock aria-hidden className="size-8 shrink-0 text-gold-500" strokeWidth={1.4} />
           <p className="max-w-[60ch]">
             In the meantime, questions about this policy can be sent to{' '}
-            <a className="link-underline" href={`mailto:${site.contact.supportEmail}`}>
+            <a className="link-underline whitespace-nowrap max-[359px]:text-[0.8rem]" href={`mailto:${site.contact.supportEmail}`}>
               {site.contact.supportEmail}
             </a>
             .

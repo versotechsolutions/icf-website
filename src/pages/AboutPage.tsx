@@ -96,9 +96,9 @@ export default function AboutPage() {
             {whyChooseIcf.map((w, i) => {
               const Icon = whyIcons[i];
               return (
-                <li key={w.title} className="grid gap-3 py-6 md:grid-cols-[3rem_18rem_1fr] md:items-baseline md:gap-8">
+                <li key={w.title} className="grid gap-3 py-6 md:grid-cols-[2.5rem_17rem_1fr] md:items-baseline md:gap-6 lg:grid-cols-[3rem_23rem_1fr] lg:gap-8">
                   <Icon aria-hidden className="size-6 text-gold-400" strokeWidth={1.5} />
-                  <h3 className="font-serif text-[1.25rem] font-semibold text-white">{w.title}</h3>
+                  <h3 className="font-serif text-[1.15rem] font-semibold text-white">{w.title}</h3>
                   <p className="leading-relaxed text-white/75">{w.text}</p>
                 </li>
               );

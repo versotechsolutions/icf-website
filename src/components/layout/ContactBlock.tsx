@@ -32,9 +32,8 @@ export function ContactBlock({
           <div>
             <dt className="text-sm text-muted">Email</dt>
             <dd>
-              <a className="link-underline" href={`mailto:${site.contact.supportEmail}`}>
-                support@<wbr />
-                {site.domain}
+              <a className="link-underline whitespace-nowrap max-[359px]:text-[0.8rem]" href={`mailto:${site.contact.supportEmail}`}>
+                {site.contact.supportEmail}
               </a>
             </dd>
           </div>

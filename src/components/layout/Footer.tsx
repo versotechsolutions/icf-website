@@ -26,7 +26,7 @@ export function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="bg-navy-900 text-[0.95rem] text-white/80">
-      <Container className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
+      <Container className="grid gap-12 py-16 md:grid-cols-2 xl:grid-cols-[1.3fr_0.9fr_1fr_1.5fr]">
         <div>
           <Logo plate className="h-20" />
           <p className="mt-6 max-w-sm leading-relaxed text-white/75">{site.footerIntro}</p>
@@ -40,10 +40,8 @@ export function Footer() {
             <li className="flex gap-3">
               <Mail aria-hidden className="mt-1 size-4 shrink-0 text-gold-400" />
               <span>
-                <a href={`mailto:${site.contact.supportEmail}`} className="text-white hover:underline">
-                  support@
-                  <wbr />
-                  {site.domain}
+                <a href={`mailto:${site.contact.supportEmail}`} className="whitespace-nowrap text-white hover:underline max-[359px]:text-[0.8rem]">
+                  {site.contact.supportEmail}
                 </a>
                 <span className="block text-sm text-white/60">Participant support</span>
               </span>

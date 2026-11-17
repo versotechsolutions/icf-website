@@ -47,11 +47,11 @@ export const pillars = ['Global networking', 'Knowledge sharing', 'Collaboration
 /* ------------------------------------------------------------------ Peer review
  * Source: Organization Home page Details.docx (table) */
 export const peerReviewSteps: LabelledText[] = [
-  { title: 'Abstract submission', text: 'Authors submit their abstracts through the conference website.' },
-  { title: 'Peer reviewer selection', text: 'Qualified experts from the field are selected to review submissions.' },
-  { title: 'Review process', text: 'Reviewers evaluate the quality, relevance, originality, and methodology of the abstracts and full papers.' },
+  { title: 'Abstract Submission', text: 'Authors submit their abstracts through the conference website.' },
+  { title: 'Peer Reviewer Selection', text: 'Qualified experts from the field are selected to review submissions.' },
+  { title: 'Review Process', text: 'Reviewers evaluate the quality, relevance, originality, and methodology of the abstracts and full papers.' },
   { title: 'Feedback', text: 'Authors receive feedback, which may include acceptance or revision requests, or rejection.' },
-  { title: 'Final decision', text: 'The conference committee makes the final decision based on reviewer feedback.' },
+  { title: 'Final Decision', text: 'The conference committee makes the final decision based on reviewer feedback.' },
   { title: 'Awards', text: 'Presented papers are eligible for awards, such as Best Paper and Best Presenter.' },
 ];
 

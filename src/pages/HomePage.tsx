@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Handshake, Lightbulb, MessageSquareQuote, TrendingUp, Users } from 'lucide-react';
-import { aboutIntro, mission, peerReviewSteps, pillars, vision } from '@/data/content';
+import { aboutIntro, mission, pillars, vision } from '@/data/content';
 import { continents, countryByCode } from '@/data/countries';
 import { topics } from '@/data/topics';
 import { site } from '@/data/site';
@@ -13,7 +13,8 @@ import { ButtonLink } from '@/components/ui/Button';
 import { Notice } from '@/components/ui/Notice';
 import { ConferenceFinder } from '@/components/home/ConferenceFinder';
 import { EnquiryButton } from '@/components/home/EnquiryButton';
-import { ConferenceRow } from '@/components/conference/ConferenceRow';
+import { PeerReviewTimeline } from '@/components/home/PeerReviewTimeline';
+import { ConferenceCard } from '@/components/conference/ConferenceCard';
 import { TopicIcon } from '@/components/conference/TopicIcon';
 import { cn } from '@/utils/cn';
 import type { Continent } from '@/types';
@@ -99,6 +100,24 @@ function AboutIntro() {
 
 function Upcoming() {
   const list = conferenceSnapshot.upcoming(6);
+  // Same card grid and rise-and-settle entrance as the Conferences page, played when the section scrolls into view.
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el || !('IntersectionObserver' in window)) return setInView(true);
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   return (
     <section className="bg-mist py-20 lg:py-24" aria-labelledby="upcoming-heading">
       <Container>
@@ -115,13 +134,9 @@ function Upcoming() {
         <Notice tone="sample" className="mt-8">
           These listings are development sample data used to demonstrate the design. They will be replaced by ICF's live conference records.
         </Notice>
-        <div className="mt-6 grid rounded-[var(--radius-lg)] border border-rule bg-white px-6 lg:grid-cols-2 lg:gap-x-12 lg:px-8">
-          {[list.slice(0, Math.ceil(list.length / 2)), list.slice(Math.ceil(list.length / 2))].map((col, ci) => (
-            <div key={ci} className={cn('divide-y divide-rule', ci === 0 && 'max-lg:border-b max-lg:border-rule')}>
-              {col.map((c) => (
-                <ConferenceRow key={c.id} c={c} compact />
-              ))}
-            </div>
+        <div ref={gridRef} className={cn('mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3', inView ? 'grid-rise' : 'opacity-0')}>
+          {list.map((c) => (
+            <ConferenceCard key={c.id} c={c} tone="white" />
           ))}
         </div>
       </Container>
@@ -220,30 +235,6 @@ function ByContinent() {
   );
 }
 
-function PeerReview() {
-  return (
-    <section className="py-20 lg:py-24" aria-labelledby="review-heading">
-      <Container>
-        <SectionHeading id="review-heading" title="Peer review process" intro="Every submission follows the same route from abstract to final decision." />
-        <ol className="relative mt-14 grid gap-10 md:grid-cols-3 lg:grid-cols-6 lg:gap-6">
-          <span className="absolute left-6 right-6 top-6 hidden h-px bg-gold-500/60 lg:block" aria-hidden />
-          {peerReviewSteps.map((s, i) => (
-            <li key={s.title} className="relative flex gap-4 lg:flex-col">
-              <span className="relative z-10 inline-flex size-12 shrink-0 items-center justify-center rounded-full border border-gold-500 bg-white font-serif text-lg font-semibold text-navy-900">
-                {i + 1}
-              </span>
-              <div>
-                <h3 className="font-serif text-[1.15rem] font-semibold">{s.title}</h3>
-                <p className="mt-2 text-[0.95rem] leading-relaxed text-muted">{s.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </Container>
-    </section>
-  );
-}
-
 function Delegates() {
   return (
     <section className="border-t border-rule bg-mist py-20 lg:py-24" aria-labelledby="delegates-heading">
@@ -303,7 +294,7 @@ export default function HomePage() {
       <Upcoming />
       <TopicIndex />
       <ByContinent />
-      <PeerReview />
+      <PeerReviewTimeline />
       <Delegates />
       <Partners />
       <EnquiryButton />

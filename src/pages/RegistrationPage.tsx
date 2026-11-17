@@ -115,7 +115,7 @@ export default function RegistrationPage() {
               {site.contact.phone}
             </a>{' '}
             or email{' '}
-            <a className="link-underline" href={`mailto:${site.contact.supportEmail}`}>
+            <a className="link-underline whitespace-nowrap max-[359px]:text-[0.8rem]" href={`mailto:${site.contact.supportEmail}`}>
               {site.contact.supportEmail}
             </a>
             . Our Conference Coordination Team will be happy to assist you with your registration and payment-related queries.

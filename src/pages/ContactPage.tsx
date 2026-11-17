@@ -135,7 +135,7 @@ export default function ContactPage() {
 
         <aside aria-labelledby="info-h" className="self-start lg:sticky lg:top-28">
           <div className="overflow-hidden rounded-[var(--radius-lg)] bg-navy-900 text-white">
-            <div className="p-7 sm:p-8">
+            <div className="p-5 sm:p-8">
               <h2 id="info-h" className="text-h3 text-white">
                 Contact information
               </h2>
@@ -145,10 +145,8 @@ export default function ContactPage() {
                   <Mail aria-hidden className="mt-1 size-5 shrink-0 text-gold-300" />
                   <div>
                     <p className="text-sm text-white/60">Participant support</p>
-                    <a href={`mailto:${site.contact.supportEmail}`} className="font-semibold hover:underline">
-                      support@
-                      <wbr />
-                      {site.domain}
+                    <a href={`mailto:${site.contact.supportEmail}`} className="whitespace-nowrap text-[0.8125rem] font-semibold hover:underline max-[359px]:text-[0.75rem] min-[400px]:text-base">
+                      {site.contact.supportEmail}
                     </a>
                   </div>
                 </li>
