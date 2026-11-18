@@ -5,7 +5,6 @@ import { mainNav, site } from '@/data/site';
 import { useOnClickOutside } from '@/hooks/useOnClickOutside';
 import { Container } from '@/components/ui/Container';
 import { Logo } from '@/components/ui/Logo';
-import { ButtonLink } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
 import { NavDropdown } from './NavDropdown';
 import { navIcons } from './navIcons';
@@ -182,9 +181,6 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
             ),
           )}
         </ul>
-        <ButtonLink to="/registration" onClick={onClose} size="lg" className="mt-6 w-full">
-          Register for a conference
-        </ButtonLink>
       </nav>
     </div>
   );
@@ -216,9 +212,6 @@ export function Header() {
           </div>
           <DesktopNav pathname={pathname} />
           <div className="flex items-center gap-3">
-            <ButtonLink to="/registration" size="sm" className="hidden sm:inline-flex">
-              Register
-            </ButtonLink>
             <button
               className="inline-flex size-11 items-center justify-center rounded-[var(--radius-sm)] text-navy-900 hover:bg-mist xl:hidden"
               aria-expanded={mobileOpen}

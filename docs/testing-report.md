@@ -67,7 +67,7 @@ Full-page screenshots were reviewed at desktop, tablet (820px, home) and mobile 
 | Header logo wordmark unreadable at header size | Header uses an emblem + typeset name lockup; the full logo stays in footer and admin |
 | Native select rendered taller and with a double chevron | Custom select styling in `field-input` |
 | Desktop nav labels wrapped after the logo change | `whitespace-nowrap`, shorter "Conference info" label |
-| Email addresses broke mid-word in footer and contact blocks | Break opportunity after `@`; contact block uses a wrapping flex row |
+| Email addresses broke mid-word in footer and contact blocks | Email kept on one line everywhere and sized to fit screens down to 320px |
 | Contact form and admin dashboard overflowed horizontally on mobile | Grid children allowed to shrink (`min-width: 0`); wide tables scroll inside their panel |
 | Hovering a dropdown and then clicking closed it again (found by test 14) | Mouse clicks keep the menu open; keyboard Enter/Space toggles |
 | Admin sidebar background stopped at viewport height | Sidebar column painted full height, inner panel sticky |

@@ -43,7 +43,7 @@ npm run assets                                   # regenerate optimised logo/fav
 | Other | `/gallery`, `/contact`, `/policies/:slug` (privacy, terms, disclaimer, refund-cancellation), 404 |
 | Admin (UI only) | `/admin/login`, `/admin` (dashboard), `/admin/conferences` (+ `/new`, `/:id/edit`), `/admin/registrations`, `/admin/payments`, `/admin/emails`, `/admin/reports`, `/admin/content` |
 
-The admin login accepts any valid-looking email and password in this phase. It is reachable from the footer "Admin" link. There is one common admin login: no roles or permission levels.
+The admin login accepts any valid-looking email and password in this phase. It is reached by going to `/admin/login` directly; there is no link to it on the public site. There is one common admin login: no roles or permission levels.
 
 Conference management supports manual entry and **Excel bulk upload** (template download, up to 10 records per file, validation, duplicate checks, preview, confirm/cancel, import summary). Excel files are read and written in the browser with [SheetJS](https://sheetjs.com) 0.20.3, installed from the official SheetJS CDN (the npm registry copy is outdated) and loaded only when the upload dialog is used. Added, edited, imported and deleted conferences are held in memory for the admin session only.
 

@@ -37,7 +37,8 @@ Status colours (`success`, `warning`, `danger`) are reserved for state and alway
 
 - **Source Serif 4** (variable, self-hosted): headings, figures, pull quotes. It is scholarly and has optical sizing, and it echoes the classical serif of the logo wordmark.
 - **Public Sans** (variable, self-hosted): body text and UI. It is an institutional typeface designed for accessibility.
-- Scale (major third, 17px body): display 56 / h1 44 / h2 34 / h3 24, reduced on mobile. Body line-height 1.6, long serif prose 1.75. Line length ≤ 68ch.
+- Scale (15px base, matched to the client's reference site): display 40 / h1 30 / h2 24 / h3 18, reduced on mobile. Body line-height 1.6. Line length ≤ 68ch.
+- Paragraphs are justified site-wide, without hyphenation (no word is split across lines).
 
 ### Shape and depth
 
@@ -59,9 +60,9 @@ Radii 3 / 6 / 10px by hierarchy (controls / panels / large panels). There are on
 | Notice / SampleTag (sample, pending, info) | `src/components/ui/Notice.tsx` |
 | Accordion, Modal (native `<dialog>`), Pagination | `src/components/ui/` |
 | Form fields with accessible errors; CountryCombobox (ARIA combobox) | `src/components/forms/` |
-| ConferenceRow + DateTile, TopicIcon, QuickLinks | `src/components/conference/` |
+| ConferenceCard, TopicIcon, QuickLinks | `src/components/conference/` |
 | Header (utility bar, dropdowns, mobile drawer), Footer, ContactBlock | `src/components/layout/` |
-| Admin: Panel, StatCard, StatusBadge, Table, SegmentedFilter, ColumnChart, BarList, Toast | `src/admin/components/` |
+| Admin: Panel, StatCard, StatusBadge, Table, SegmentedFilter, AreaChart, BarList, Toast | `src/admin/components/` |
 
 ## Accessibility floor
 

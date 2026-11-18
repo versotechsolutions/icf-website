@@ -15,7 +15,7 @@ The Phase 1 frontend has been built without waiting for the items below. Each on
 | A7 | **Conference brochure** (PDF), per conference | "Download brochure" popup | Popup form only |
 | A8 | **Privacy Policy, Terms & Conditions, Disclaimer, Refund & Cancellation Policy** text | `/policies/*` | Page shells marked "awaiting approval" |
 | A9 | **Social media profile URLs** (Facebook, LinkedIn named in the brief) | Contact page | "link pending" labels, not linked |
-| A10 | **Full postal address** (only "Chennai" supplied) | Footer, contact | City shown only |
+| A10 | **Full postal address** (only "Chennai" supplied) | Footer, contact | Not shown; the location was removed at the client's request |
 | A11 | **Detailed programme per conference**: actual sessions, speakers, timings | Programme, conference details | Indicative schedule from Program.docx, labelled indicative |
 | A12 | **Confirmed venues** per conference and map links | Tentative venue, details | Hilton Nagoya shown as "example from client brief" |
 | A13 | **Call for papers introduction** and **submission deadlines** | Call for papers | Short neutral intro; deadlines deferred to the conference pages |
@@ -26,11 +26,11 @@ The Phase 1 frontend has been built without waiting for the items below. Each on
 
 | # | Question | Assumption made in Phase 1 |
 |---|---|---|
-| B1 | Which email is primary for each purpose? The brief lists `icfofficial5@gmail.com` (general enquiries) and `support@internationalconferenceforum.com` (customer support). Is a domain address (for example `info@internationalconferenceforum.com`) planned to replace the Gmail address? | Support address used site-wide; Gmail shown only as "General enquiries" |
+| B1 | Which email is primary for each purpose? The brief lists `icfofficial5@gmail.com` (general enquiries) and `support@internationalconferenceforum.com` (customer support). Is a domain address (for example `info@internationalconferenceforum.com`) planned to replace the Gmail address? | Support address used site-wide; the Gmail address is not shown |
 | B2 | Example addresses in the documents (`info@yourdomain.com`, `support@yourdomain.com`, `www.yourdomain.com`, and `support@igaeglobal.com` in the Registration draft) | **Not used anywhere.** Confirmed ICF details are used instead. |
 | B3 | The Contact Us source mentions "latest **IGAE** news" | Rewritten as "latest ICF news" |
 | B4 | Is "Publication Enquiry" an enquiry type? It appears in the homepage document but not in the Contact Us page document. | Excluded, following the Contact Us document and the approved brief |
-| B5 | "Submit Conference" in the footer: is this for organisers submitting events to the listing? | Links to the contact form with "Partnership / Collaboration" preselected |
+| B5 | "Submit Conference" in the footer: is this for organisers submitting events to the listing? | Removed from the footer at the client's request |
 | B6 | Are registration fees the same for every conference (USD table supplied once)? | Same table shown site-wide; editable per conference in the admin form |
 | B7 | Popular-country list for the listing page | India, Japan, UAE, UK, US, Canada, Singapore, Australia, Malaysia, Thailand, Germany, France (please confirm) |
 | B8 | The homepage banner artwork supplied in the homepage document uses an older logo variant (orange figure, sans-serif wordmark) | Not used, to keep the brand consistent; only its tagline and pillar words are reused |

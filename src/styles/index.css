@@ -79,12 +79,12 @@
     letter-spacing: -0.01em;
     text-wrap: balance;
   }
-  /* Paragraphs are justified site-wide (client request). Hyphenation keeps word gaps even in narrow columns.
+  /* Paragraphs are justified site-wide (client request). Words are never split with hyphens (client request).
      Paragraphs given an explicit alignment (e.g. text-center) keep it, since utilities override this base rule. */
   p {
     text-wrap: pretty;
     text-align: justify;
-    hyphens: auto;
+    hyphens: manual;
   }
   a { color: inherit; text-decoration: none; }
   :focus-visible {

@@ -17,10 +17,10 @@ All client copy is centralised in `src/data/`, so it can later be replaced by CM
 |---|---|---|
 | Organisation name and profile | Requirement- icf.docx | `src/data/site.ts` |
 | Support email `support@internationalconferenceforum.com` | Requirement- icf.docx; event-site Contact Us page.docx; Registration Page.docx | Utility bar, footer, contact block, contact page |
-| General enquiries email `icfofficial5@gmail.com` | Requirement- icf.docx ("Official Email IDs") | Footer, contact page |
+| General enquiries email `icfofficial5@gmail.com` | Requirement- icf.docx ("Official Email IDs") | Not shown (removed at the client's request) |
 | Phone `+91 8220586724` | Requirement- icf.docx | Utility bar, footer, contact block, contact page |
-| Location "Chennai" | Requirement- icf.docx ("Address: chennai") | Utility bar, footer, contact page |
-| Domain `internationalconferenceforum.com` | Requirement- icf.docx | Footer, contact block |
+| Location "Chennai" | Requirement- icf.docx ("Address: chennai") | Not shown (removed from the utility bar, footer and contact page at the client's request) |
+| Domain `internationalconferenceforum.com` | Requirement- icf.docx | Contact block, contact page |
 | Colours (navy, white, gold), favicon = logo icon | Requirement- icf.docx | `src/styles/index.css`, `public/favicon-32.png` |
 | Logo | `ICF -lOGO.png` (also embedded in Requirement- icf.docx) | Header lockup (emblem crop), footer, admin, favicon (globe crop) |
 | Tagline "Connect, share, advance" and hero line "Bringing researchers, professionals and innovators together for a better tomorrow"; four pillars (Global networking, Knowledge sharing, Collaboration opportunities, Impactful research) | Banner artwork embedded in Organization Home page Details.docx | Home hero, pillars strip |
@@ -30,7 +30,7 @@ All client copy is centralised in `src/data/`, so it can later be replaced by CM
 
 | Page / route | Source document(s) | Content used |
 |---|---|---|
-| **Home** `/` | Organization Home page Details.docx | Menu items; About ICF intro (verbatim) with Read more → About; Browse by topic (10 topics, linking to the listing); Conference by Continent (heading only, with countries from sample data); Peer Review Process (6 steps, verbatim); "Experience Shared by Our Delegates" (labelled placeholder, no content supplied); "Our Associated Partners" (labelled placeholder, no logos supplied) |
+| **Home** `/` | Organization Home page Details.docx | Menu items; About ICF intro (verbatim) with Read more → About; Browse by topic (10 topics, linking to the listing); Conference by Continent (a starting list of countries per continent for ICF to confirm, plus any country with a listed conference); Peer Review Process (6 steps, verbatim); "Experience Shared by Our Delegates" (labelled placeholder, no content supplied); "Our Associated Partners" (labelled placeholder, no logos supplied) |
 | | Organaization site/About ICF.docx | Mission and vision (verbatim) |
 | | Call For paper - page.docx | Research-theme counts per topic |
 | **About ICF** `/about` | Organaization site/About ICF.docx | Intro, "Our Vision for Excellence" (3 items), mission, vision |
@@ -57,7 +57,7 @@ All client copy is centralised in `src/data/`, so it can later be replaced by CM
 | **Contact** `/contact` | Organaization site/Contact Us Page.docx | Intro, form fields (Full Name*, Email*, Phone, Country*, Organisation/Institution, Subject*, Enquiry Type* with 6 types, Message*), Submit Enquiry button |
 | | Organization Home page Details.docx | Recommended features: Privacy Policy consent checkbox (included). Saving enquiries, admin listing, auto-email and spam protection are Phase 2. |
 | | event details site/Contact Us page.docx | Contact information and social media (Facebook, LinkedIn; links pending) |
-| **Footer** (all pages) | Organaization site/Footer page.docx | Logo, intro (verbatim), Quick Links, For Participants, Contact Us, Privacy Policy / Terms & Conditions / Disclaimer / Refund & Cancellation Policy. The example `info@yourdomain.com` and `www.yourdomain.com` are **not** used; confirmed details are shown instead. |
+| **Footer** (all pages) | Organaization site/Footer page.docx | Logo, intro (verbatim), Quick Links (About us, Upcoming conferences, Awards, Terms & Conditions, Privacy Policy), Contact Us (email and phone only) and the copyright line. The For Participants column, the bottom row of policy links and the other contact details were removed at the client's request. The example `info@yourdomain.com` and `www.yourdomain.com` are **not** used; confirmed details are shown instead. |
 | **Policy pages** `/policies/:slug` | Footer page.docx (link names only) | Page shells marked "awaiting client approval". No legal text is invented. |
 
 ## Admin panel (frontend UI only)

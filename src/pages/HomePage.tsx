@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Handshake, Lightbulb, MessageSquareQuote, TrendingUp, Users } from 'lucide-react';
 import { aboutIntro, mission, pillars, vision } from '@/data/content';
-import { continents, countryByCode } from '@/data/countries';
+import { continentCountryCodes, continents, countryByCode } from '@/data/countries';
 import { topics } from '@/data/topics';
 import { site } from '@/data/site';
 import { conferenceSnapshot } from '@/services/conferences';
@@ -179,16 +179,22 @@ function TopicIndex() {
   );
 }
 
+const continentTabId = (c: Continent) => `tab-${c.toLowerCase().replace(/\s+/g, '-')}`;
+
 function ByContinent() {
   const [active, setActive] = useState<Continent>('Asia');
-  const inUse = conferenceSnapshot.countriesInUse().map((c) => countryByCode(c)!).filter(Boolean);
-  const here = inUse.filter((c) => c.continent === active).sort((a, b) => a.name.localeCompare(b.name));
+  // The listed countries for the continent, plus any country that already has a conference there.
+  const codes = new Set([...continentCountryCodes[active], ...conferenceSnapshot.countriesInUse()]);
+  const here = [...codes]
+    .map((code) => countryByCode(code))
+    .filter((c) => c?.continent === active)
+    .map((c) => c!)
+    .sort((a, b) => a.name.localeCompare(b.name));
   return (
     <section className="bg-navy-900 py-20 text-white lg:py-24" aria-labelledby="continent-heading">
       <Container className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16">
         <div>
-          <SectionHeading id="continent-heading" tone="dark" title="Conference by continent" intro="Choose a region to see the countries currently hosting conferences." />
-          <p className="mt-6 text-sm text-white/60">Country and conference counts shown here use development sample data.</p>
+          <SectionHeading id="continent-heading" tone="dark" title="Conference by continent" intro="Choose a region, then a country, to see its upcoming conferences." />
         </div>
         <div>
           <div role="tablist" aria-label="Continents" className="flex flex-wrap gap-2">
@@ -196,7 +202,7 @@ function ByContinent() {
               <button
                 key={c}
                 role="tab"
-                id={`tab-${c}`}
+                id={continentTabId(c)}
                 aria-selected={c === active}
                 aria-controls="continent-panel"
                 onClick={() => setActive(c)}
@@ -209,9 +215,8 @@ function ByContinent() {
               </button>
             ))}
           </div>
-          <div id="continent-panel" role="tabpanel" aria-labelledby={`tab-${active}`} className="mt-8 border-t border-white/15 pt-8">
-            {here.length ? (
-              <ul className="grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div id="continent-panel" role="tabpanel" aria-labelledby={continentTabId(active)} className="mt-8 border-t border-white/15 pt-8">
+            <ul className="grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
                 {here.map((c) => (
                   <li key={c.code}>
                     <Link to={`/conferences/${c.slug}`} className="group flex items-center justify-between border-b border-white/10 py-3 hover:text-gold-300">
@@ -220,10 +225,7 @@ function ByContinent() {
                     </Link>
                   </li>
                 ))}
-              </ul>
-            ) : (
-              <p className="text-white/70">No conferences are listed in {active} yet. Explore all upcoming conferences instead.</p>
-            )}
+            </ul>
             <Link to={`/conferences?continent=${encodeURIComponent(active)}`} className="mt-8 inline-flex items-center gap-2 font-semibold text-gold-300 hover:text-gold-400">
               View all conferences in {active}
               <ArrowRight aria-hidden className="size-4" />

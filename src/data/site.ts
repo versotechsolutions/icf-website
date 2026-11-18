@@ -80,18 +80,11 @@ export const eventQuickLinks: (NavItem & { action?: 'brochure' })[] = [
 /** Footer columns (source: Footer page.docx, with links mapped to built pages). */
 export const footerNav = {
   quickLinks: [
-    { label: 'Home', to: '/' },
     { label: 'About us', to: '/about' },
-    { label: 'Browse conferences', to: '/topics' },
     { label: 'Upcoming conferences', to: '/conferences' },
-    { label: 'Submit a conference', to: '/contact?enquiry=partnership' },
-  ] satisfies NavItem[],
-  participants: [
-    { label: 'Registration information', to: '/registration' },
-    { label: 'Abstract submission', to: '/paper-submission#abstract' },
-    { label: 'Paper submission', to: '/paper-submission#full-paper' },
-    { label: 'Invitation letter', to: '/invitation-letter' },
-    { label: 'FAQs', to: '/faq' },
+    { label: 'Awards', to: '/awards' },
+    { label: 'Terms & Conditions', to: '/policies/terms' },
+    { label: 'Privacy Policy', to: '/policies/privacy' },
   ] satisfies NavItem[],
   legal: [
     { label: 'Privacy Policy', to: '/policies/privacy' },

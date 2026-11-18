@@ -209,6 +209,16 @@ export const countries: Country[] = rows.map(([code, name, slug, continent]) => 
 
 export const continents: Continent[] = ['Asia', 'Europe', 'North America', 'South America', 'Africa', 'Oceania'];
 
+/** Countries listed under each continent in the home page "Conference by continent" section (to be confirmed by ICF). */
+export const continentCountryCodes: Record<Continent, string[]> = {
+  Asia: ['IN', 'JP', 'CN', 'SG', 'MY', 'TH', 'ID', 'VN', 'PH', 'KR', 'AE', 'SA', 'QA', 'OM', 'TR', 'LK', 'NP', 'BD', 'HK'],
+  Europe: ['GB', 'DE', 'FR', 'IT', 'ES', 'NL', 'CH', 'PT', 'AT', 'BE', 'SE', 'IE', 'CZ', 'PL', 'GR', 'DK', 'NO', 'FI', 'HU'],
+  'North America': ['US', 'CA', 'MX', 'CR', 'PA', 'CU', 'JM', 'DO', 'GT', 'BS', 'TT'],
+  'South America': ['BR', 'AR', 'CL', 'CO', 'PE', 'EC', 'UY', 'PY', 'BO', 'VE', 'GY', 'SR'],
+  Africa: ['ZA', 'EG', 'KE', 'NG', 'MA', 'GH', 'TZ', 'ET', 'RW', 'UG', 'TN', 'DZ', 'MU', 'SN', 'ZM'],
+  Oceania: ['AU', 'NZ', 'FJ', 'PG', 'WS', 'TO', 'VU', 'SB'],
+};
+
 /** Popular destinations shown as quick country links on the listing page (to be confirmed by ICF). */
 export const popularCountryCodes = ['IN', 'JP', 'AE', 'GB', 'US', 'CA', 'SG', 'AU', 'MY', 'TH', 'DE', 'FR'];
 
