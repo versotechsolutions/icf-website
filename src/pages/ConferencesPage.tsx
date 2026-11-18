@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { CalendarX2, Loader2, SlidersHorizontal, X } from 'lucide-react';
-import { countries, countryBySlug, popularCountryCodes, countryByCode } from '@/data/countries';
+import { countryBySlug, popularCountryCodes, countryByCode } from '@/data/countries';
 import { topics, topicBySlug } from '@/data/topics';
 import { conferenceSnapshot, listConferences } from '@/services/conferences';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -148,6 +148,11 @@ export default function ConferencesPage() {
 
   const months = useMemo(() => conferenceSnapshot.months(), []);
   const popular = popularCountryCodes.map((c) => countryByCode(c)!).filter(Boolean);
+  // Filter offers only countries with conferences; a country opened from a link (e.g. the continent list) is kept so it shows as selected.
+  const countryOptions = useMemo(() => {
+    const list = conferenceSnapshot.countriesWithConferences();
+    return country && !list.some((c) => c.code === country.code) ? [...list, country].sort((a, b) => a.name.localeCompare(b.name)) : list;
+  }, [country]);
   const activeCount = [keyword, topic, month, continent, countrySlug].filter(Boolean).length;
 
   const crumbs = country ? [{ label: 'Upcoming conferences', to: '/conferences' }, { label: country.name }] : [{ label: 'Upcoming conferences' }];
@@ -219,7 +224,7 @@ export default function ConferencesPage() {
                 Search
               </Button>
             </div>
-            <CountryCombobox label="Country" value={countrySlug ?? ''} onChange={setCountry} placeholder="All countries" options={countries} />
+            <CountryCombobox label="Country" value={countrySlug ?? ''} onChange={setCountry} placeholder="All countries" options={countryOptions} />
             <fieldset>
               <legend className="mb-2 text-[0.92rem] font-semibold text-navy-900">Conference category</legend>
               <div className="space-y-1">

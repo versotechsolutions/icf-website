@@ -39,29 +39,11 @@ export const mainNav: NavGroup[] = [
     items: [
       { label: 'Upcoming conferences', to: '/conferences', description: 'Search by country, month, topic or keyword' },
       { label: 'Browse by topic', to: '/topics', description: 'Ten subject areas and their research themes' },
-      { label: 'Conference details', to: '/event/icicgb-26', description: 'Example conference page layout' },
     ],
   },
-  {
-    label: 'For participants',
-    items: [
-      { label: 'Registration', to: '/registration', description: 'Categories, fees and how to register' },
-      { label: 'Paper submission', to: '/paper-submission', description: 'Abstract and full paper guidelines' },
-      { label: 'Invitation letter', to: '/invitation-letter', description: 'Requirements and visa disclaimer' },
-      { label: 'Awards', to: '/awards', description: 'Recognition for research and presentation' },
-    ],
-  },
-  {
-    label: 'Conference info',
-    items: [
-      { label: 'Call for papers', to: '/call-for-papers', description: 'Research themes by subject area' },
-      { label: 'Programme', to: '/programme', description: 'Agenda and indicative schedule' },
-      { label: 'Conference FAQ', to: '/faq', description: 'Answers to common questions' },
-      { label: 'Tentative venue', to: '/venue', description: 'Venue details for each conference' },
-      { label: 'Travel information', to: '/travel', description: 'Visa, travel and accommodation guidance' },
-      { label: 'Video conferencing', to: '/video-conferencing', description: 'Joining and presenting online' },
-    ],
-  },
+  { label: 'Paper submission', to: '/paper-submission' },
+  { label: 'Invitation letter', to: '/invitation-letter' },
+  { label: 'Awards', to: '/awards' },
   { label: 'Gallery', to: '/gallery' },
   { label: 'Contact', to: '/contact' },
 ];

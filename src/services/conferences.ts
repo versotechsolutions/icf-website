@@ -7,7 +7,7 @@
  */
 import { sampleConferences } from '@/data/conferences.sample';
 import { countryByCode, countryBySlug } from '@/data/countries';
-import type { Conference, ConferenceQuery, Paged } from '@/types';
+import type { Conference, ConferenceQuery, Country, Paged } from '@/types';
 
 const LATENCY_MS = 350;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -62,4 +62,11 @@ export const conferenceSnapshot = {
   countByTopic: (slug: string) => publicConferences().filter((c) => c.topicSlug === slug).length,
   months: () => Array.from(new Set(publicConferences().map((c) => c.startDate.slice(0, 7)))),
   countriesInUse: () => Array.from(new Set(publicConferences().map((c) => c.countryCode))),
+  /** Countries that have at least one listed conference, A to Z: the options for the search filters. */
+  countriesWithConferences: (): Country[] =>
+    conferenceSnapshot
+      .countriesInUse()
+      .map((code) => countryByCode(code))
+      .filter((c): c is Country => Boolean(c))
+      .sort((a, b) => a.name.localeCompare(b.name)),
 };

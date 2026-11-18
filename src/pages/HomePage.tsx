@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Handshake, Lightbulb, MessageSquareQuote, TrendingUp, Users } from 'lucide-react';
 import { aboutIntro, mission, pillars, vision } from '@/data/content';
-import { continentCountryCodes, continents, countryByCode } from '@/data/countries';
+import { continents, countries } from '@/data/countries';
 import { topics } from '@/data/topics';
 import { site } from '@/data/site';
 import { conferenceSnapshot } from '@/services/conferences';
@@ -74,22 +74,23 @@ function AboutIntro() {
       <Container className="grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
         <div>
           <SectionHeading id="about-heading" title="About International Conference Forum (ICF)" />
-          <div className="prose-icf mt-6 text-[1.075rem] leading-[1.75] text-ink/90">
+          {/* Width and first-line indent tuned so the justified lines have small, even word gaps on desktop */}
+          <div className="prose-icf mt-6 text-[1.075rem] leading-[1.75] text-ink/90 xl:max-w-[37.75rem] xl:[&>p]:indent-[2.5em]">
             {aboutIntro.map((p) => (
               <p key={p.slice(0, 20)}>{p}</p>
             ))}
           </div>
-          <ButtonLink to="/about" variant="secondary" className="mt-8">
+          <ButtonLink to="/about" variant="gold" className="mt-8">
             Read more about ICF
           </ButtonLink>
         </div>
         <div className="flex flex-col justify-center gap-10 lg:border-l lg:border-rule lg:pl-14">
           <figure>
-            <figcaption className="font-serif text-h3 text-navy-900">Our mission</figcaption>
+            <figcaption className="font-serif text-h3 text-globe-600">Our mission</figcaption>
             <blockquote className="mt-3 border-l-2 border-gold-500 pl-5 text-lg leading-relaxed text-ink/85">{mission}</blockquote>
           </figure>
           <figure>
-            <figcaption className="font-serif text-h3 text-navy-900">Our vision</figcaption>
+            <figcaption className="font-serif text-h3 text-globe-600">Our vision</figcaption>
             <blockquote className="mt-3 border-l-2 border-gold-500 pl-5 text-lg leading-relaxed text-ink/85">{vision}</blockquote>
           </figure>
         </div>
@@ -183,13 +184,7 @@ const continentTabId = (c: Continent) => `tab-${c.toLowerCase().replace(/\s+/g, 
 
 function ByContinent() {
   const [active, setActive] = useState<Continent>('Asia');
-  // The listed countries for the continent, plus any country that already has a conference there.
-  const codes = new Set([...continentCountryCodes[active], ...conferenceSnapshot.countriesInUse()]);
-  const here = [...codes]
-    .map((code) => countryByCode(code))
-    .filter((c) => c?.continent === active)
-    .map((c) => c!)
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const here = countries.filter((c) => c.continent === active).sort((a, b) => a.name.localeCompare(b.name));
   return (
     <section className="bg-navy-900 py-20 text-white lg:py-24" aria-labelledby="continent-heading">
       <Container className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16">
@@ -216,15 +211,17 @@ function ByContinent() {
             ))}
           </div>
           <div id="continent-panel" role="tabpanel" aria-labelledby={continentTabId(active)} className="mt-8 border-t border-white/15 pt-8">
-            <ul className="grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
-                {here.map((c) => (
-                  <li key={c.code}>
-                    <Link to={`/conferences/${c.slug}`} className="group flex items-center justify-between border-b border-white/10 py-3 hover:text-gold-300">
-                      <span className="font-semibold">{c.name}</span>
-                      <ArrowRight aria-hidden className="size-4 text-gold-400 opacity-60 group-hover:opacity-100" />
-                    </Link>
-                  </li>
-                ))}
+            <ul className="flex flex-wrap gap-2">
+              {here.map((c) => (
+                <li key={c.code}>
+                  <Link
+                    to={`/conferences/${c.slug}`}
+                    className="inline-flex rounded-[var(--radius-sm)] border border-white/25 px-3 py-1.5 text-sm font-semibold text-white/90 transition-colors hover:border-gold-400 hover:bg-gold-400 hover:text-navy-950"
+                  >
+                    {c.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
             <Link to={`/conferences?continent=${encodeURIComponent(active)}`} className="mt-8 inline-flex items-center gap-2 font-semibold text-gold-300 hover:text-gold-400">
               View all conferences in {active}

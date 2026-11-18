@@ -10,7 +10,7 @@ export default function InvitationLetterPage() {
   usePageMeta('Invitation letter', 'How to request an ICF invitation letter for your visa application, required documents and the visa disclaimer.');
   return (
     <>
-      <PageHeader title="Invitation letter and visa guidelines" crumbs={[{ label: 'For participants' }, { label: 'Invitation letter' }]} intro="What the ICF invitation letter is, how to request one, and what it can and cannot do for your visa application." />
+      <PageHeader title="Invitation letter and visa guidelines" crumbs={[{ label: 'Invitation letter' }]} intro="What the ICF invitation letter is, how to request one, and what it can and cannot do for your visa application." />
       <EventInfoLayout>
         {/* The letter itself, presented as a document */}
         <section aria-labelledby="letter-h" className="relative rounded-[var(--radius-md)] border border-rule bg-white p-8 shadow-[var(--shadow-lift)] sm:p-12">

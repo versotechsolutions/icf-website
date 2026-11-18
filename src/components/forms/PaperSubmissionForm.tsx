@@ -52,7 +52,7 @@ export function PaperSubmissionForm() {
 
   if (sent) {
     return (
-      <div role="status" className="mt-8 rounded-[var(--radius-lg)] border border-success/30 bg-success/5 p-8">
+      <div role="status" className="rounded-[var(--radius-lg)] border border-success/30 bg-success/5 p-8">
         <CheckCircle2 aria-hidden className="size-9 text-success" />
         <h3 className="mt-4 text-h3">Paper ready to submit</h3>
         <p className="mt-2 text-ink/85">
@@ -80,7 +80,7 @@ export function PaperSubmissionForm() {
   };
 
   return (
-    <form noValidate onSubmit={form.handleSubmit(() => setSent(true))} className="mt-8 grid gap-5 sm:grid-cols-2">
+    <form noValidate onSubmit={form.handleSubmit(() => setSent(true))} className="grid gap-5 sm:grid-cols-2">
       {form.submitted && form.errorCount > 0 && (
         <div role="alert" className="rounded-[var(--radius-md)] border border-danger/40 bg-danger/5 px-4 py-3 text-[0.95rem] text-danger sm:col-span-2">
           {form.errorCount === 1 ? 'One field needs attention.' : `${form.errorCount} fields need attention.`} Check the highlighted fields below.

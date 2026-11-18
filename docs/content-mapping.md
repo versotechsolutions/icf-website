@@ -30,20 +30,20 @@ All client copy is centralised in `src/data/`, so it can later be replaced by CM
 
 | Page / route | Source document(s) | Content used |
 |---|---|---|
-| **Home** `/` | Organization Home page Details.docx | Menu items; About ICF intro (verbatim) with Read more → About; Browse by topic (10 topics, linking to the listing); Conference by Continent (a starting list of countries per continent for ICF to confirm, plus any country with a listed conference); Peer Review Process (6 steps, verbatim); "Experience Shared by Our Delegates" (labelled placeholder, no content supplied); "Our Associated Partners" (labelled placeholder, no logos supplied) |
+| **Home** `/` | Organization Home page Details.docx | Menu items; About ICF intro (verbatim) with Read more → About; Browse by topic (10 topics, linking to the listing); Conference by Continent (every country in the selected continent, each linking to its conference page); Peer Review Process (6 steps, verbatim); "Experience Shared by Our Delegates" (labelled placeholder, no content supplied); "Our Associated Partners" (labelled placeholder, no logos supplied) |
 | | Organaization site/About ICF.docx | Mission and vision (verbatim) |
 | | Call For paper - page.docx | Research-theme counts per topic |
 | **About ICF** `/about` | Organaization site/About ICF.docx | Intro, "Our Vision for Excellence" (3 items), mission, vision |
 | | event details site/About ICF.docx | Core values (4) and "Why choose ICF?" (5), verbatim |
-| **Upcoming conferences** `/conferences`, `/conferences/:country` | Organization Home page Details.docx ("Upcoming Conference page / Listing Event" requirements) | Searchable country dropdown (all countries), popular-country links, filters (country, month, category, keyword), pagination, loading and empty states, responsive layout, SEO-friendly country URLs such as `/conferences/india`. **Results are sample data**, because the database connection is Phase 2. |
+| **Upcoming conferences** `/conferences`, `/conferences/:country` | Organization Home page Details.docx ("Upcoming Conference page / Listing Event" requirements) | Searchable country dropdown (lists the countries that have conferences, so every choice returns results; any country page still opens from a link), popular-country links, month tabs, filters (country, category, keyword), pagination, loading and empty states, responsive layout, SEO-friendly country URLs such as `/conferences/india`. **Results are sample data**, because the database connection is Phase 2. |
 | **Browse by topic** `/topics` | Organaization site/Browse by topic.docx; Call For paper - page.docx | 10 subject areas; subtopics per area (verbatim). Each area links to the filtered listing. |
 | **Conference details** `/event/:slug` | event details site/About Conf page.docx | ICICGB-26 example description (verbatim, placeholder token removed), conference highlights (6), registration information (3) |
 | | Quick Links.docx | Right-hand Quick Links panel (Call for papers, Paper submission, Register now, Tentative programme, Invitation letter, Awards, Download brochure popup form) |
 | | Program.docx | Agenda highlights |
 | | Tentative venue page.docx | Example venue (Hilton Nagoya), labelled as an example |
 | **Call for papers** `/call-for-papers` | event details site/Call For paper - page.docx | All 10 subject areas and 217 research themes (verbatim). Abstract word limit and the "acceptance does not guarantee" note are from Submission Page.docx. |
-| **Paper submission** `/paper-submission` | event details site/Submission Page.docx | Abstract guidelines (9), full paper intro and guidelines (7), manuscript structure (11 sections), template buttons, contact block and closing line |
-| | Organaization site/Paper Submission page.docx | Instruction "remove the Journal Publication box Form". The page is informational only: no submission form and no Journal Publication field. |
+| **Paper submission** `/paper-submission` | event details site/Submission Page.docx; client screenshot of the submission form | The paper submission form only, at the client's request (the abstract and full paper guideline text was removed from the page) |
+| | Organaization site/Paper Submission page.docx | Instruction "remove the Journal Publication box Form". The form has no Journal Publication field. |
 | **Registration** `/registration` | event details site/Registration Page.docx | Intro, registration information, categories and fees table (USD, 6 categories × pre-enrolment/standard, verbatim), "Make payment" button, important notes (3 steps + 3 rules), "Connect with us". The registration form UI is a frontend demonstration. |
 | | event details site/Contact Us page.docx | Form fields: name, email, code & phone, participant category, conference |
 | **Invitation letter** `/invitation-letter` | Organaization site/Invitation Letter.docx | Intro, requirements, 4 documents, visa application disclaimer (verbatim) |

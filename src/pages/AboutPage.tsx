@@ -23,7 +23,8 @@ export default function AboutPage() {
             <BookOpenCheck aria-hidden className="size-10 text-gold-500" strokeWidth={1.3} />
             <p className="mt-6 font-serif text-[1.65rem] leading-snug text-navy-900">{aboutIntro[1]}</p>
           </div>
-          <div className="prose-icf text-[1.075rem] leading-[1.75] text-ink/90">
+          {/* Width and first-line indent tuned so the justified lines have small, even word gaps on desktop */}
+          <div className="prose-icf text-[1.075rem] leading-[1.75] text-ink/90 xl:max-w-[37.875rem] xl:[&>p]:indent-[2em]">
             <p>{aboutIntro[0]}</p>
             <p>{aboutIntro[2]}</p>
           </div>
@@ -34,12 +35,12 @@ export default function AboutPage() {
       <section className="pb-20" aria-label="Mission and vision">
         <Container className="grid overflow-hidden rounded-[var(--radius-lg)] md:grid-cols-2">
           <div className="bg-navy-900 p-8 text-white sm:p-12">
-            <h2 className="text-h2 text-white">Our mission</h2>
+            <h2 className="text-h2 text-[#8fbaf5]">Our mission</h2>
             <span className="rule-gold mt-4" aria-hidden />
             <p className="mt-6 text-lg leading-relaxed text-white/85">{mission}</p>
           </div>
           <div className="border border-rule bg-white p-8 max-md:border-t-0 md:border-l-0 sm:p-12">
-            <h2 className="text-h2">Our vision</h2>
+            <h2 className="text-h2 text-globe-600">Our vision</h2>
             <span className="rule-gold mt-4" aria-hidden />
             <p className="mt-6 text-lg leading-relaxed text-ink/85">{vision}</p>
           </div>

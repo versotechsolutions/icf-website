@@ -44,7 +44,7 @@ export default function CallForPapersPage() {
         intro={`ICF invites researchers, academicians, students and industry professionals to submit original research. Papers are welcomed across ${topics.length} subject areas and ${total} research themes.`}
       >
         <ButtonLink to="/paper-submission" variant="gold">
-          Read the submission guidelines
+          Submit a paper
         </ButtonLink>
         <ButtonLink to="/registration" variant="onDark">
           Registration and fees
@@ -147,7 +147,7 @@ export default function CallForPapersPage() {
                 Review the abstract and full paper guidelines, and check the specific conference page for its submission deadline. Acceptance of an abstract does not automatically guarantee acceptance of the full paper.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <ButtonLink to="/paper-submission">Submission guidelines</ButtonLink>
+                <ButtonLink to="/paper-submission">Submit a paper</ButtonLink>
                 <ButtonLink to="/awards" variant="secondary">
                   Awards for presented papers
                 </ButtonLink>

@@ -48,6 +48,17 @@ await test('Home finder submits subject filter to listing', async () => {
   assert((await text('h1')).includes('Law'), 'heading does not reflect topic');
 });
 
+await test('Home finder month filter opens that month on the listing', async () => {
+  await go('/');
+  const month = await page.$eval('#finder-month option:nth-child(2)', (o) => o.value);
+  await page.select('#finder-month', month);
+  await page.click('form[role=search] button[type=submit]');
+  await page.waitForFunction((m) => location.pathname === '/conferences' && location.search.includes(`month=${m}`), {}, month);
+  await page.waitForFunction(() => /found/.test(document.querySelector('#results-heading')?.textContent ?? ''));
+  const pressed = await page.$eval('nav[aria-label="Conferences by month"] [aria-pressed=true]', (b) => b.dataset.month);
+  assert(pressed === month, `month tab not selected (${pressed})`);
+});
+
 await test('Searchable country combobox navigates to SEO country page', async () => {
   await go('/conferences');
   const input = await page.$('form#filters input[role=combobox]');
@@ -210,30 +221,26 @@ await test('Dropdown: hover opens with transition, aligned directly below its me
 
 await test('Dropdown: moving the mouse from item into the panel does not flicker closed', async () => {
   await go('/');
-  const t = await center('button[aria-controls="menu-for-participants"]');
+  const t = await center('button[aria-controls="menu-conferences"]');
   await page.mouse.move(t.x, t.y);
   await sleep(250);
-  const link = await center('#menu-for-participants a[href="/awards"]');
+  const link = await center('#menu-conferences a[href="/topics"]');
   // move diagonally in small steps through the gap, sampling the state on the way
   let closedOnTheWay = false;
   for (let i = 1; i <= 12; i++) {
     await page.mouse.move(t.x + ((link.x - t.x) * i) / 12, t.y + ((link.y - t.y) * i) / 12);
     await sleep(25);
-    if ((await panelState('menu-for-participants')).state !== 'open') closedOnTheWay = true;
+    if ((await panelState('menu-conferences')).state !== 'open') closedOnTheWay = true;
   }
   assert(!closedOnTheWay, 'panel closed while moving into it');
 });
 
-await test('Dropdown: only one dropdown open at a time; leaving closes it', async () => {
+await test('Dropdown: leaving the menu closes it', async () => {
   await go('/');
-  const a = await center('button[aria-controls="menu-conferences"]');
-  const b = await center('button[aria-controls="menu-conference-info"]');
-  await page.mouse.move(a.x, a.y);
-  await sleep(250);
-  await page.mouse.move(b.x, b.y, { steps: 6 });
+  const b = await center('button[aria-controls="menu-conferences"]');
+  await page.mouse.move(b.x, b.y);
   await sleep(300);
-  assert((await openCount()) === 1, 'more than one dropdown open');
-  assert((await panelState('menu-conference-info')).state === 'open', 'hovered dropdown not open');
+  assert((await openCount()) === 1, 'hovered dropdown not open');
   await page.mouse.move(b.x, 600, { steps: 4 });
   await page.mouse.move(40, 700);
   await sleep(400);
@@ -259,21 +266,24 @@ await test('Dropdown: click opens/keeps open, click outside closes, submenu link
 
 await test('Dropdown: keyboard (Enter, arrows, Home/End, Escape, Tab out)', async () => {
   await go('/');
-  await page.focus('button[aria-controls="menu-conference-info"]');
+  await page.focus('button[aria-controls="menu-conferences"]');
   await page.keyboard.press('ArrowDown');
   await sleep(100);
   let href = await page.evaluate(() => document.activeElement.getAttribute('href'));
-  assert(href === '/call-for-papers', `ArrowDown did not focus first link (${href})`);
+  assert(href === '/conferences', `ArrowDown did not focus first link (${href})`);
   await page.keyboard.press('ArrowDown');
   href = await page.evaluate(() => document.activeElement.getAttribute('href'));
-  assert(href === '/programme', 'ArrowDown did not move to next link');
+  assert(href === '/topics', 'ArrowDown did not move to next link');
+  await page.keyboard.press('Home');
+  href = await page.evaluate(() => document.activeElement.getAttribute('href'));
+  assert(href === '/conferences', 'Home did not move to first link');
   await page.keyboard.press('End');
   href = await page.evaluate(() => document.activeElement.getAttribute('href'));
-  assert(href === '/video-conferencing', 'End did not move to last link');
+  assert(href === '/topics', 'End did not move to last link');
   await page.keyboard.press('Escape');
   await sleep(50);
   const focused = await page.evaluate(() => document.activeElement.getAttribute('aria-controls'));
-  assert(focused === 'menu-conference-info' && (await openCount()) === 0, 'Escape did not close and return focus');
+  assert(focused === 'menu-conferences' && (await openCount()) === 0, 'Escape did not close and return focus');
   await page.keyboard.press('Enter');
   await sleep(50);
   assert((await openCount()) === 1, 'Enter did not open');
@@ -289,10 +299,10 @@ await test('Dropdown: keyboard (Enter, arrows, Home/End, Escape, Tab out)', asyn
 await test('Dropdown: touch tap toggles on large touch screens', async () => {
   await page.setViewport({ width: 1366, height: 1024, hasTouch: true, isMobile: false });
   await go('/');
-  const t = await center('button[aria-controls="menu-for-participants"]');
+  const t = await center('button[aria-controls="menu-conferences"]');
   await page.touchscreen.tap(t.x, t.y);
   await sleep(250);
-  assert((await panelState('menu-for-participants')).state === 'open', 'tap did not open');
+  assert((await panelState('menu-conferences')).state === 'open', 'tap did not open');
   await page.touchscreen.tap(t.x, t.y);
   await sleep(250);
   assert((await openCount()) === 0, 'second tap did not close');

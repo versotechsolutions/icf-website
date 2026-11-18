@@ -39,7 +39,7 @@
 | 13 | Awards: tabs switch content |
 | 14a | Dropdown: hover opens with transition; panel is aligned to its menu item and sits directly below the header |
 | 14b | Dropdown: moving the mouse diagonally from the item into the panel never closes it (sampled every 25 ms) |
-| 14c | Dropdown: only one dropdown open at a time; leaving the nav closes it after the grace period |
+| 14c | Dropdown: leaving the menu closes it after the grace period |
 | 14d | Dropdown: click opens/keeps open, click outside closes, submenu link navigates and closes the menu |
 | 14e | Dropdown keyboard: ArrowDown focuses first link, arrows/End move, Escape closes and returns focus, Enter toggles, Tab out closes |
 | 14f | Dropdown: tap toggles open/closed on large touch screens |

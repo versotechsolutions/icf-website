@@ -38,8 +38,8 @@ npm run assets                                   # regenerate optimised logo/fav
 | Home | `/` |
 | About | `/about` |
 | Conferences | `/conferences`, `/conferences/:country` (SEO country pages, for example `/conferences/india`), `/topics`, `/event/:slug` (for example `/event/icicgb-26`) |
-| For participants | `/registration`, `/paper-submission`, `/invitation-letter`, `/awards` |
-| Conference information | `/call-for-papers`, `/programme`, `/faq`, `/venue`, `/travel`, `/video-conferencing` |
+| Main menu pages | `/paper-submission` (submission form only), `/invitation-letter`, `/awards` |
+| Event information (reached from the Quick links panel and conference pages, not the main menu) | `/registration`, `/call-for-papers`, `/programme`, `/faq`, `/venue`, `/travel`, `/video-conferencing` |
 | Other | `/gallery`, `/contact`, `/policies/:slug` (privacy, terms, disclaimer, refund-cancellation), 404 |
 | Admin (UI only) | `/admin/login`, `/admin` (dashboard), `/admin/conferences` (+ `/new`, `/:id/edit`), `/admin/registrations`, `/admin/payments`, `/admin/emails`, `/admin/reports`, `/admin/content` |
 

@@ -21,7 +21,7 @@ export default function AwardsPage() {
     <>
       <PageHeader
         title="Awards and recognition"
-        crumbs={[{ label: 'For participants' }, { label: 'Awards' }]}
+        crumbs={[{ label: 'Awards' }]}
         intro="ICF conferences recognise outstanding research, presentation and student contributions, subject to each conference's evaluation criteria."
       />
       <Container className="py-14">
