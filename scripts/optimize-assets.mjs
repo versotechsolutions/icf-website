@@ -41,8 +41,9 @@ for (const w of [800, 1400]) {
 await sharp(photo).resize({ width: 1200 }).jpeg({ quality: 80, mozjpeg: true }).toFile(p(out, 'og-image.jpg'));
 console.log('done');
 
-// Client-supplied home page banner (1093×436). Kept at its native width: upscaling would only blur it.
-const banner = p(src, 'home-banner-supplied.jpg');
+// Client-supplied home page banner (1774×887): full size, plus a 900px version for phones.
+const banner = p(src, 'home-banner-supplied.png');
 await sharp(banner).webp({ quality: 85 }).toFile(p(out, 'home-banner.webp'));
+await sharp(banner).resize({ width: 900 }).webp({ quality: 85 }).toFile(p(out, 'home-banner-900.webp'));
 await sharp(banner).jpeg({ quality: 85, mozjpeg: true }).toFile(p(out, 'home-banner.jpg'));
 console.log('banner done');

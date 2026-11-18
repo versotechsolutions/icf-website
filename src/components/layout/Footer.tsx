@@ -29,7 +29,8 @@ export function Footer() {
       <Container className="grid gap-12 py-16 md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1.4fr]">
         <div>
           <Logo plate className="h-20" />
-          <p className="mt-6 max-w-sm leading-relaxed text-white/75">{site.footerIntro}</p>
+          {/* Too short to justify evenly, so it stays left-aligned with balanced line lengths */}
+          <p className="mt-6 text-left text-base leading-relaxed text-white/75 [text-wrap:balance]">{site.footerIntro}</p>
         </div>
         <Column title="Quick links" links={footerNav.quickLinks} />
         <div>
@@ -56,7 +57,7 @@ export function Footer() {
       </Container>
       <div className="border-t border-white/10">
         <Container className="py-6 text-sm text-white/60">
-          <p>
+          <p className="text-left">
             © {year} {site.name} ({site.shortName}). All rights reserved.
           </p>
         </Container>

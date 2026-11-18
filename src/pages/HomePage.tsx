@@ -28,11 +28,11 @@ function Hero() {
       <h1 className="sr-only">International Conference Forum (ICF): {site.heroLine}</h1>
       <div className="bg-[#eaf2fb]">
         <picture>
-          <source srcSet="/images/home-banner.webp" type="image/webp" />
+          <source srcSet="/images/home-banner-900.webp 900w, /images/home-banner.webp 1774w" sizes="(max-width: 1600px) 100vw, 1600px" type="image/webp" />
           <img
             src="/images/home-banner.jpg"
-            width={1093}
-            height={436}
+            width={1774}
+            height={887}
             alt="International Conference Forum. Connect, Share, Advance. Bringing researchers, professionals and innovators together for a better tomorrow: global networking, knowledge sharing, collaboration opportunities and impactful research."
             className="mx-auto block h-auto w-full max-w-[1600px]"
             fetchPriority="high"
@@ -162,11 +162,11 @@ function TopicIndex() {
           {topics.map((t) => (
             <li key={t.slug} className="border-b border-rule">
               <Link to={`/conferences?topic=${t.slug}`} className="group flex items-center gap-5 py-5">
-                <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-navy-50 text-navy-800 transition-colors group-hover:bg-navy-900 group-hover:text-gold-300">
+                <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-navy-900 text-white transition-colors group-hover:bg-globe-100 group-hover:text-navy-900 group-focus-visible:bg-globe-100 group-focus-visible:text-navy-900">
                   <TopicIcon slug={t.slug} className="size-[1.375rem]" />
                 </span>
                 <span className="flex-1">
-                  <span className="block font-serif text-[1.2rem] font-semibold text-navy-900 group-hover:text-globe-700">{t.name}</span>
+                  <span className="block font-serif text-[1.2rem] font-semibold text-navy-900">{t.name}</span>
                   <span className="text-sm text-muted">{t.subtopics.length} research themes</span>
                 </span>
                 <ArrowRight aria-hidden className="size-5 text-gold-500 transition-transform group-hover:translate-x-1" />
