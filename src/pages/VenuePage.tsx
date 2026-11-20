@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Building2, MapPinned, Plane } from 'lucide-react';
 import { exampleVenue } from '@/data/content';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useSitePath } from '@/hooks/useEventSite';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EventInfoLayout } from '@/layouts/EventInfoLayout';
 import { Notice } from '@/components/ui/Notice';
@@ -12,6 +13,7 @@ import { Notice } from '@/components/ui/Notice';
  */
 export default function VenuePage() {
   usePageMeta('Tentative venue', 'Tentative venue details for ICF conferences.');
+  const sitePath = useSitePath();
   return (
     <>
       <PageHeader title="Tentative venue" crumbs={[{ label: 'Conference information' }, { label: 'Tentative venue' }]} intro="Venue details are confirmed for each conference and published here and on the conference page." />
@@ -60,7 +62,7 @@ export default function VenuePage() {
             </h2>
             <p className="mt-1 text-muted">Participants arrange their own visa, travel and accommodation. Read the guidance before you book.</p>
           </div>
-          <Link to="/travel" className="font-semibold text-globe-700 hover:underline">
+          <Link to={sitePath('/travel')} className="font-semibold text-globe-700 hover:underline">
             Travel information
           </Link>
         </section>

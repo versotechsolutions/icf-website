@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import { useSitePath } from '@/hooks/useEventSite';
 
 export type Crumb = { label: string; to?: string };
 
 export function Breadcrumbs({ items, tone = 'dark' }: { items: Crumb[]; tone?: 'dark' | 'light' }) {
+  const sitePath = useSitePath();
   const linkCls = tone === 'dark' ? 'text-white/70 hover:text-white' : 'text-muted hover:text-navy-900';
   return (
     <nav aria-label="Breadcrumb">
       <ol className="flex flex-wrap items-center gap-1.5 text-sm">
         <li>
-          <Link to="/" className={linkCls}>
+          <Link to={sitePath('/')} className={linkCls}>
             Home
           </Link>
         </li>

@@ -1,12 +1,14 @@
 import { AlertTriangle, CheckSquare, FileCheck2, Luggage, Stamp } from 'lucide-react';
 import { travel } from '@/data/content';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useSitePath } from '@/hooks/useEventSite';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EventInfoLayout } from '@/layouts/EventInfoLayout';
 import { ButtonLink } from '@/components/ui/Button';
 
 export default function TravelPage() {
   usePageMeta('Travel and accommodation', 'Visa, invitation letter, travel and accommodation guidance for ICF conference participants.');
+  const sitePath = useSitePath();
   return (
     <>
       <PageHeader title="Travel and accommodation information" crumbs={[{ label: 'Conference information' }, { label: 'Travel information' }]} intro={travel.visaIntro.join(' ')} />
@@ -24,7 +26,7 @@ export default function TravelPage() {
                 <FileCheck2 aria-hidden className="size-5 text-globe-600" /> Invitation letter issuance
               </h3>
               <p className="mt-3 leading-relaxed text-ink/85">{travel.issuance}</p>
-              <ButtonLink to="/invitation-letter" variant="ghost" size="sm" className="-ml-3 mt-4">
+              <ButtonLink to={sitePath('/invitation-letter')} variant="ghost" size="sm" className="-ml-3 mt-4">
                 How to request a letter
               </ButtonLink>
             </div>

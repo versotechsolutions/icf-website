@@ -23,7 +23,7 @@ function CalendarBlock({ iso }: { iso: string }) {
   );
 }
 
-/** Upcoming-events card for the conference listing grid. Use tone="white" on a grey section background. */
+/** Upcoming-events card for the conference listing grid; opens the conference's event site in a new tab. Use tone="white" on a grey section background. */
 export function ConferenceCard({ c, tone = 'mist' }: { c: Conference; tone?: 'mist' | 'white' }) {
   const country = countryByCode(c.countryCode);
   return (
@@ -36,8 +36,9 @@ export function ConferenceCard({ c, tone = 'mist' }: { c: Conference; tone?: 'mi
       <CalendarBlock iso={c.startDate} />
       <div className="flex min-w-0 flex-1 flex-col">
         <h3 className="line-clamp-4 text-[0.98rem] font-sans font-semibold leading-snug text-navy-900">
-          <Link to={`/event/${c.slug}`} className="after:absolute after:inset-0 group-hover:text-globe-700" title={c.title}>
+          <Link to={`/event/${c.slug}`} target="_blank" rel="noopener" className="after:absolute after:inset-0 group-hover:text-globe-700" title={c.title}>
             {c.title}
+            <span className="sr-only"> (opens in a new tab)</span>
           </Link>
         </h3>
         <p className="sr-only">Dates: {formatDateRange(c.startDate, c.endDate)}</p>

@@ -149,6 +149,47 @@ export const registrationRules = [
   'No registration will be entertained after the last date of registration.',
 ];
 
+/* ------------------------------------------------------------------ Submission
+ * Source: event details site/Submission Page.docx */
+export const abstractGuidelines: LabelledText[] = [
+  { title: 'Original research', text: 'Abstracts must clearly present original research, innovative ideas, or the study being submitted.' },
+  { title: 'Language and quality', text: 'All abstracts must be written in English and be free from grammatical and spelling errors.' },
+  { title: 'Content requirements', text: 'Submissions should be informative, relevant to the conference theme, clear, and concise.' },
+  { title: 'Word limit', text: 'Abstracts must be written as a single paragraph of 200–250 words.' },
+  { title: 'Author details', text: "The title, author name(s), and institutional affiliation(s) must be centered. The presenting author's name must be underlined." },
+  { title: 'Author biography', text: 'Include a brief biography of the presenting author, following the official abstract template.' },
+  { title: 'File format', text: 'Submit the abstract as a Microsoft Word document (.doc or .docx).' },
+  { title: 'Online submission', text: 'Upload your abstract through the official ICF submission portal.' },
+  { title: 'Submission confirmation', text: 'An acknowledgment email will be sent within three working days of successful submission.' },
+];
+
+export const fullPaperIntro =
+  'Authors whose abstracts have been accepted and who have completed the required conference registration are invited to submit their full papers for review. Please follow the guidelines below to ensure successful submission.';
+
+export const fullPaperGuidelines: LabelledText[] = [
+  { title: 'Language and quality', text: 'Manuscripts must be written in English and carefully proofread for grammatical accuracy, clarity, and readability.' },
+  { title: 'Paper length and format', text: 'Full papers should be 6–8 pages long and formatted in a double-column layout, following the specified conference template.' },
+  { title: 'Tables, figures, and images', text: 'Include clear, high-quality tables, figures, and images with appropriate numbering, captions, and references in the text.' },
+  { title: 'Keywords', text: 'Provide relevant keywords in lowercase, separated by commas, except for proper nouns and scientific terms that require capitalization.' },
+  { title: 'Author affiliations', text: "Clearly mention each author's full name, institutional affiliation, department (if applicable), and country." },
+  { title: 'File format', text: 'Submit the manuscript as a Microsoft Word document (.doc or .docx).' },
+  { title: 'Online submission', text: 'Upload your full paper through the official ICF submission portal.' },
+];
+
+export const manuscriptStructure = [
+  'Paper Title',
+  'Author Details and Affiliations',
+  'Abstract',
+  'Keywords / Index Terms',
+  'Background / Introduction',
+  'Motivation and Objectives',
+  'Research Contribution / Methodology',
+  'Results',
+  'Discussion',
+  'Conclusions',
+  'References',
+];
+
 /* ------------------------------------------------------------------ Programme
  * Source: event details site/Program.docx */
 export const agendaIntro = [

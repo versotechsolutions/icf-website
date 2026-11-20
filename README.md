@@ -37,7 +37,8 @@ npm run assets                                   # regenerate optimised logo/fav
 |---|---|
 | Home | `/` |
 | About | `/about` |
-| Conferences | `/conferences`, `/conferences/:country` (SEO country pages, for example `/conferences/india`), `/topics`, `/event/:slug` (for example `/event/icicgb-26`) |
+| Conferences | `/conferences`, `/conferences/:country` (SEO country pages, for example `/conferences/india`), `/topics` |
+| Event site (one per conference, opens in a new tab) | `/event/:slug` (home, for example `/event/icicgb-26`) and its pages: `about-icf`, `about`, `programme`, `call-for-papers`, `paper-submission`, `submission-guidelines`, `registration`, `awards`, `gallery`, `venue`, `travel`, `video-conferencing`, `faq`, `invitation-letter`, `contact`. It has its own header menu, top bar and footer (`src/layouts/EventSiteLayout.tsx`). |
 | Main menu pages | `/paper-submission` (submission form only), `/invitation-letter`, `/awards` |
 | Event information (reached from the Quick links panel and conference pages, not the main menu) | `/registration`, `/call-for-papers`, `/programme`, `/faq`, `/venue`, `/travel`, `/video-conferencing` |
 | Other | `/gallery`, `/contact`, `/policies/:slug` (privacy, terms, disclaimer, refund-cancellation), 404 |
@@ -70,7 +71,7 @@ scripts/           asset optimisation, screenshots, smoke tests
 ## Ready for Phase 2
 
 - **Data access is isolated.** Pages call `listConferences()` / `getConference()` in `src/services/conferences.ts`, which return Promises with pagination metadata. Replace their bodies with `fetch('/api/...')`; UI components do not change.
-- **Filters live in the URL** (`?q=&topic=&month=&page=` and `/conferences/:country`), so server-side rendering or prerendering of country pages is straightforward.
+- **Filters live in the URL** (`?topic=&month=&page=` and `/conferences/:country`), so server-side rendering or prerendering of country pages is straightforward.
 - **Forms** use one `useForm` hook with schema rules (`src/utils/validation.ts`); add an API call in each `handleSubmit` callback.
 - **Content** sits in `src/data/content.ts` and maps one-to-one to the admin "Conference content" fields.
 - **Sample data** sits in `src/data/*.sample.ts` and can be deleted once real APIs exist.

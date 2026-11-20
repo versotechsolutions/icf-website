@@ -61,7 +61,7 @@ await test('Home finder month filter opens that month on the listing', async () 
 
 await test('Searchable country combobox navigates to SEO country page', async () => {
   await go('/conferences');
-  const input = await page.$('form#filters input[role=combobox]');
+  const input = await page.$('#filters input[role=combobox]');
   await input.click();
   await input.type('Jap');
   await page.keyboard.press('Enter');
@@ -75,6 +75,54 @@ await test('Searchable country combobox navigates to SEO country page', async ()
   const n = parseInt(await text('#results-heading'), 10);
   assert(n > 0, 'no conferences for Japan');
   assert((await text('h1')) === 'Conferences in Japan', 'country heading missing');
+});
+
+await test('Conference category dropdown filters the listing', async () => {
+  await go('/conferences');
+  await page.select('#flt-topic', 'law');
+  await page.waitForFunction(() => location.search.includes('topic=law'));
+  await page.waitForFunction(() => document.querySelector('h1')?.textContent.includes('Law'));
+});
+
+await test('Conference cards open the event site in a new tab', async () => {
+  await go('/conferences');
+  await page.waitForSelector('article a[href^="/event/"]');
+  const target = await page.$eval('article a[href^="/event/"]', (a) => a.target);
+  assert(target === '_blank', `card link target is "${target}"`);
+});
+
+await test('Event site has its own menu, footer and conference-relative links', async () => {
+  await go('/event/icicgb-26');
+  await page.waitForSelector('header nav[aria-label=Main]');
+  // The first "Main" nav is the desktop menu (the second is the mobile menu).
+  const items = await page.$eval('header nav[aria-label=Main] > ul', (ul) => [...ul.children].map((li) => li.querySelector('a,button').textContent.trim()));
+  const expected = ['Home', 'About', 'Program', 'Call For Paper', 'Submission', 'Registration', 'Awards', 'Gallery', 'Venue', 'Contact'];
+  assert(JSON.stringify(items) === JSON.stringify(expected), `event menu: ${items.join(', ')}`);
+  const sub = await page.$$eval('#menu-submission a', (a) => a.map((x) => x.getAttribute('href')));
+  assert(sub.join() === '/event/icicgb-26/paper-submission,/event/icicgb-26/submission-guidelines', `submission menu: ${sub.join()}`);
+  await go('/event/icicgb-26/submission-guidelines');
+  await page.waitForFunction(() => document.querySelector('h1')?.textContent === 'Submission guidelines');
+  const quick = await page.$$eval('aside[aria-labelledby=quick-links] a', (a) => a.map((x) => x.getAttribute('href')));
+  assert(quick.length === 6 && quick.every((h) => h.startsWith('/event/icicgb-26/')), `quick links: ${quick.join()}`);
+  const footer = await page.$eval('footer', (f) => f.textContent);
+  assert(footer.includes('ICICGB-26') && footer.includes('Conference FAQ'), 'event footer missing');
+});
+
+await test('Event Subscribe popup validates and captures the event link', async () => {
+  await go('/event/icicgb-26');
+  const [btn] = await page.$$('xpath/.//button[normalize-space(.)="Subscribe"]');
+  await btn.click();
+  await page.waitForSelector('dialog[open]');
+  await page.click('dialog[open] button[type=submit]');
+  await page.waitForSelector('dialog[open] [aria-invalid=true]');
+  await page.type('#f-subName', 'Test Subscriber');
+  await page.type('#f-subEmail', 'subscriber@example.org');
+  await page.type('#f-subMobile', '+91 98765 43210');
+  await page.click('dialog[open] button[type=submit]');
+  await page.waitForSelector('dialog[open] [role=status]');
+  const text = await page.$eval('dialog[open] [role=status]', (d) => d.textContent);
+  assert(text.includes('/event/icicgb-26'), 'event link not captured');
+  await page.keyboard.press('Escape');
 });
 
 await test('Empty state shown when no results', async () => {
@@ -135,7 +183,7 @@ await test('Contact email validation message', async () => {
 
 await test('Registration: fee table pre-fills form, paper title required for authors', async () => {
   await go('/registration');
-  await page.click('button[aria-label^="Select Author Presentation, standard"]');
+  await page.click('input[type=radio][aria-label^="Author Presentation, standard"]');
   await sleep(300);
   assert((await page.$eval('#f-category', (s) => s.value)) === 'Author Presentation', 'category not pre-filled');
   assert((await page.$eval('#f-period', (s) => s.value)) === 'standard', 'period not pre-filled');
@@ -183,7 +231,7 @@ await test('FAQ accordion expands and search filters', async () => {
 
 await test('Download brochure opens modal form with validation', async () => {
   await go('/programme');
-  const [btn] = await page.$$('xpath/.//button[contains(., "Download brochure")]');
+  const [btn] = await page.$$('xpath/.//button[contains(., "Download Brochure")]');
   await btn.click();
   await page.waitForFunction(() => document.querySelector('dialog')?.open === true);
   await page.click('dialog button[type=submit]');

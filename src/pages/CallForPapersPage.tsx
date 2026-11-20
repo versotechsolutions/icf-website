@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FileCheck2, FileText, Search, Send } from 'lucide-react';
 import { topics } from '@/data/topics';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useSitePath } from '@/hooks/useEventSite';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Container } from '@/components/ui/Container';
 import { ButtonLink } from '@/components/ui/Button';
@@ -25,6 +26,7 @@ function highlight(text: string, q: string) {
 
 export default function CallForPapersPage() {
   usePageMeta('Call for papers', 'ICF invites research papers across ten subject areas. Browse the research themes and prepare your abstract.');
+  const sitePath = useSitePath();
   const [q, setQ] = useState('');
   const total = topics.reduce((n, t) => n + t.subtopics.length, 0);
 
@@ -43,10 +45,10 @@ export default function CallForPapersPage() {
         crumbs={[{ label: 'Conference information' }, { label: 'Call for papers' }]}
         intro={`ICF invites researchers, academicians, students and industry professionals to submit original research. Papers are welcomed across ${topics.length} subject areas and ${total} research themes.`}
       >
-        <ButtonLink to="/paper-submission" variant="gold">
+        <ButtonLink to={sitePath('/paper-submission')} variant="gold">
           Submit a paper
         </ButtonLink>
-        <ButtonLink to="/registration" variant="onDark">
+        <ButtonLink to={sitePath('/registration')} variant="onDark">
           Registration and fees
         </ButtonLink>
       </PageHeader>
@@ -78,7 +80,7 @@ export default function CallForPapersPage() {
         </Container>
       </section>
 
-      <Container className="grid gap-12 py-14 lg:grid-cols-[minmax(0,1fr)_17.5rem] lg:gap-14">
+      <Container className="grid gap-12 py-14 lg:grid-cols-[minmax(0,1fr)_19.5rem] lg:gap-14">
         <div className="min-w-0">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -147,8 +149,8 @@ export default function CallForPapersPage() {
                 Review the abstract and full paper guidelines, and check the specific conference page for its submission deadline. Acceptance of an abstract does not automatically guarantee acceptance of the full paper.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <ButtonLink to="/paper-submission">Submit a paper</ButtonLink>
-                <ButtonLink to="/awards" variant="secondary">
+                <ButtonLink to={sitePath('/paper-submission')}>Submit a paper</ButtonLink>
+                <ButtonLink to={sitePath('/awards')} variant="secondary">
                   Awards for presented papers
                 </ButtonLink>
               </div>

@@ -8,7 +8,7 @@ import { QuickLinks } from '@/components/conference/QuickLinks';
  */
 export function EventInfoLayout({ children }: { children: ReactNode }) {
   return (
-    <Container className="grid gap-12 py-14 lg:grid-cols-[minmax(0,1fr)_17.5rem] lg:gap-14 lg:py-16">
+    <Container className="grid gap-12 py-14 lg:grid-cols-[minmax(0,1fr)_19.5rem] lg:gap-14 lg:py-16">
       <div className="min-w-0">{children}</div>
       <div className="lg:sticky lg:top-28 lg:self-start">
         <QuickLinks />

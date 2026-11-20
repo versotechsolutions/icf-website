@@ -4,6 +4,7 @@ import { registrationCategoriesIntro, registrationFees, registrationInfo, regist
 import { site } from '@/data/site';
 import { conferenceSnapshot } from '@/services/conferences';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useEventSite } from '@/hooks/useEventSite';
 import { useForm } from '@/hooks/useForm';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EventInfoLayout } from '@/layouts/EventInfoLayout';
@@ -18,55 +19,63 @@ import { cn } from '@/utils/cn';
 
 const presentingCategories = ['Author Presentation', 'Virtual Keynote Speaker Registration', 'Pre-recorded Video Submission', 'Online Presentation'];
 
+const periodLabel = { pre: 'Pre-enrolment', standard: 'Standard participation' } as const;
+const usd = (amount: number) => `USD ${amount.toFixed(2)}`;
+
+/** Fee table: one radio button per fee (category × period); choosing one pre-fills the registration form. */
 function FeeTable({ selected, period, onPick }: { selected: string; period: string; onPick: (c: string, p: 'pre' | 'standard') => void }) {
   return (
-    <div className="mt-6 overflow-x-auto rounded-[var(--radius-lg)] border border-rule">
-      <table className="w-full min-w-[34rem] text-left">
-        <caption className="sr-only">Registration categories and fees in US dollars</caption>
-        <thead className="bg-navy-900 text-white">
-          <tr>
-            <th scope="col" className="px-5 py-3.5 font-semibold">Category</th>
-            <th scope="col" className="px-5 py-3.5 text-right font-semibold">Pre-enrolment</th>
-            <th scope="col" className="px-5 py-3.5 text-right font-semibold">Standard participation</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-rule">
-          {registrationFees.map((f) => {
-            const rowSel = f.category === selected;
-            const cell = (p: 'pre' | 'standard', amount: number) => (
-              <td className="px-3 py-2 text-right">
-                <button
-                  type="button"
-                  onClick={() => onPick(f.category, p)}
-                  aria-pressed={rowSel && period === p}
-                  aria-label={`Select ${f.category}, ${p === 'pre' ? 'pre-enrolment' : 'standard'} fee ${formatUsd(amount)}`}
-                  className={cn(
-                    'rounded-[var(--radius-sm)] px-2.5 py-1.5 font-semibold tabular-nums',
-                    rowSel && period === p ? 'bg-gold-500 text-navy-950' : 'text-navy-900 hover:bg-gold-50',
-                  )}
-                >
-                  {formatUsd(amount)}
-                </button>
-              </td>
-            );
-            return (
-              <tr key={f.category} className={cn(rowSel && 'bg-gold-50/60')}>
-                <th scope="row" className="px-5 py-3 font-semibold text-navy-900">
-                  {f.category}
-                </th>
-                {cell('pre', f.preEnrolment)}
-                {cell('standard', f.standard)}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <fieldset className="mt-6">
+      <legend className="sr-only">Choose your registration category and fee</legend>
+      <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-rule">
+        <table className="w-full min-w-[34rem] text-left">
+          <caption className="sr-only">Registration categories and fees in US dollars</caption>
+          <thead className="bg-navy-900 text-white">
+            <tr>
+              <th scope="col" className="px-5 py-3.5 font-semibold">Category</th>
+              <th scope="col" className="px-5 py-3.5 font-semibold">{periodLabel.pre}</th>
+              <th scope="col" className="px-5 py-3.5 font-semibold">{periodLabel.standard}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-rule">
+            {registrationFees.map((f) => {
+              const rowSel = f.category === selected;
+              const cell = (p: 'pre' | 'standard', amount: number) => (
+                <td className="border-l border-rule transition-colors has-[:checked]:bg-globe-100">
+                  <label className="flex cursor-pointer items-center gap-3 px-5 py-3.5 hover:bg-mist">
+                    <input
+                      type="radio"
+                      name="registration-fee"
+                      value={`${f.category}|${p}`}
+                      checked={rowSel && period === p}
+                      onChange={() => onPick(f.category, p)}
+                      aria-label={`${f.category}, ${periodLabel[p].toLowerCase()}: ${usd(amount)}`}
+                      className="size-[1.15rem] shrink-0 accent-globe-600"
+                    />
+                    <span className="font-semibold tabular-nums text-navy-900">{usd(amount)}</span>
+                  </label>
+                </td>
+              );
+              return (
+                <tr key={f.category} className={cn(rowSel && 'bg-globe-100/40')}>
+                  <th scope="row" className="px-5 py-3.5 font-semibold text-navy-900">
+                    {f.category}
+                  </th>
+                  {cell('pre', f.preEnrolment)}
+                  {cell('standard', f.standard)}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </fieldset>
   );
 }
 
 export default function RegistrationPage() {
   usePageMeta('Registration', 'Register for an International Conference Forum (ICF) conference: categories, fees in USD and registration steps.');
+  const event = useEventSite();
   const conferences = conferenceSnapshot.upcoming();
   const [done, setDone] = useState(false);
 
@@ -95,13 +104,16 @@ export default function RegistrationPage() {
   const pick = (c: string, p: 'pre' | 'standard') => {
     form.set('category', c);
     form.set('period', p);
-    document.getElementById('register-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   const selectedConf = conferences.find((c) => c.slug === form.values.conference);
 
   return (
     <>
-      <PageHeader title="Register for ICF conference" crumbs={[{ label: 'For participants' }, { label: 'Registration' }]} intro={registrationIntro} />
+      <PageHeader
+        title="Register for ICF conference"
+        crumbs={event ? [{ label: 'Registration' }, { label: 'Fee details' }] : [{ label: 'Registration' }]}
+        intro={registrationIntro}
+      />
       <EventInfoLayout>
         <section aria-labelledby="info-h">
           <h2 id="info-h" className="text-h2">
@@ -130,7 +142,7 @@ export default function RegistrationPage() {
           <p className="mt-6 max-w-[66ch] leading-relaxed text-ink/90">{registrationCategoriesIntro}</p>
           <FeeTable selected={form.values.category} period={form.values.period} onPick={pick} />
           <p className="mt-3 flex items-center gap-2 text-sm text-muted">
-            <Info aria-hidden className="size-4" /> Select a fee to pre-fill the registration form.
+            <Info aria-hidden className="size-4" /> Choose a fee to pre-fill the registration form below.
           </p>
         </section>
 

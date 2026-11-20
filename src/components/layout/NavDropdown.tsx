@@ -26,11 +26,13 @@ type Props = {
   /** Hover intent: parent schedules / cancels the delayed close. */
   onPointerLeave: () => void;
   onPointerEnter: () => void;
+  /** Which edge of the menu item the panel lines up with; 'right' keeps panels near the screen edge on screen. */
+  align?: 'left' | 'right';
 };
 
 export const menuIdFor = (label: string) => `menu-${label.replace(/\s+/g, '-').toLowerCase()}`;
 
-export function NavDropdown({ group, open, active, onOpen, onClose, onToggle, onPointerEnter, onPointerLeave }: Props) {
+export function NavDropdown({ group, open, active, onOpen, onClose, onToggle, onPointerEnter, onPointerLeave, align = 'left' }: Props) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const pointerType = useRef<string>('mouse');
@@ -148,7 +150,7 @@ export function NavDropdown({ group, open, active, onOpen, onClose, onToggle, on
         />
       </button>
 
-      <DropdownPanel id={menuId} open={open} panelRef={panelRef} onKeyDown={onPanelKey}>
+      <DropdownPanel id={menuId} open={open} align={align} panelRef={panelRef} onKeyDown={onPanelKey}>
         {group.items!.map((item, i) => (
           <DropdownLink key={item.to} item={item} index={i} onNavigate={onClose} />
         ))}
@@ -161,12 +163,14 @@ export function NavDropdown({ group, open, active, onOpen, onClose, onToggle, on
 export function DropdownPanel({
   id,
   open,
+  align = 'left',
   panelRef,
   onKeyDown,
   children,
 }: {
   id: string;
   open: boolean;
+  align?: 'left' | 'right';
   panelRef: React.RefObject<HTMLDivElement | null>;
   onKeyDown: (e: KeyboardEvent) => void;
   children: React.ReactNode;
@@ -180,7 +184,8 @@ export function DropdownPanel({
       inert={!open}
       data-state={open ? 'open' : 'closed'}
       className={cn(
-        'absolute left-0 top-full z-50 pt-3 ease-out',
+        'absolute top-full z-50 pt-3 ease-out',
+        align === 'right' ? 'right-0' : 'left-0',
         // Opening: visibility flips immediately (so links are focusable at once) while opacity/position animate.
         // Closing: visibility waits for the fade-out to finish.
         open

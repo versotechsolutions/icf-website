@@ -1,6 +1,7 @@
 import { Award, BookOpenCheck, Compass, Globe2, Handshake, Lightbulb, Presentation, Scale, Search, Sprout, Users } from 'lucide-react';
 import { aboutIntro, coreValues, mission, vision, visionForExcellence, whyChooseIcf } from '@/data/content';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useSitePath } from '@/hooks/useEventSite';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Container } from '@/components/ui/Container';
 import { SectionHeading } from '@/components/ui/SectionHeading';
@@ -12,6 +13,7 @@ const excellenceIcons = [Globe2, Lightbulb, Handshake];
 
 export default function AboutPage() {
   usePageMeta('About ICF', 'About International Conference Forum (ICF): our mission, vision, core values and why researchers choose ICF.');
+  const sitePath = useSitePath();
   return (
     <>
       <PageHeader title="About International Conference Forum (ICF)" crumbs={[{ label: 'About ICF' }]} intro={aboutIntro[0]} />
@@ -109,7 +111,7 @@ export default function AboutPage() {
             <ButtonLink to="/conferences" variant="gold">
               View upcoming conferences
             </ButtonLink>
-            <ButtonLink to="/contact" variant="onDark">
+            <ButtonLink to={sitePath('/contact')} variant="onDark">
               Contact the ICF team
             </ButtonLink>
           </div>

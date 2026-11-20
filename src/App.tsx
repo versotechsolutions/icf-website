@@ -1,6 +1,7 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { SiteLayout } from '@/layouts/SiteLayout';
+import { EventSiteLayout } from '@/layouts/EventSiteLayout';
 import HomePage from '@/pages/HomePage';
 import AboutPage from '@/pages/AboutPage';
 import ConferencesPage from '@/pages/ConferencesPage';
@@ -8,6 +9,9 @@ import TopicsPage from '@/pages/TopicsPage';
 import ConferenceDetailsPage from '@/pages/ConferenceDetailsPage';
 import CallForPapersPage from '@/pages/CallForPapersPage';
 import PaperSubmissionPage from '@/pages/PaperSubmissionPage';
+import SubmissionGuidelinesPage from '@/pages/SubmissionGuidelinesPage';
+import AboutConferencePage from '@/pages/AboutConferencePage';
+import RegistrationBenefitsPage from '@/pages/RegistrationBenefitsPage';
 import RegistrationPage from '@/pages/RegistrationPage';
 import InvitationLetterPage from '@/pages/InvitationLetterPage';
 import AwardsPage from '@/pages/AwardsPage';
@@ -44,7 +48,6 @@ export const router = createBrowserRouter([
       { path: '/conferences', element: <ConferencesPage /> },
       { path: '/conferences/:country', element: <ConferencesPage /> },
       { path: '/topics', element: <TopicsPage /> },
-      { path: '/event/:slug', element: <ConferenceDetailsPage /> },
       { path: '/call-for-papers', element: <CallForPapersPage /> },
       { path: '/paper-submission', element: <PaperSubmissionPage /> },
       { path: '/registration', element: <RegistrationPage /> },
@@ -58,6 +61,31 @@ export const router = createBrowserRouter([
       { path: '/gallery', element: <GalleryPage /> },
       { path: '/contact', element: <ContactPage /> },
       { path: '/policies/:slug', element: <PolicyPage /> },
+      { path: '*', element: <NotFoundPage /> },
+    ],
+  },
+  {
+    // Each conference's own event site (menu from Event Details page.docx).
+    path: '/event/:slug',
+    element: <EventSiteLayout />,
+    children: [
+      { index: true, element: <ConferenceDetailsPage /> },
+      { path: 'about-icf', element: <AboutPage /> },
+      { path: 'about', element: <AboutConferencePage /> },
+      { path: 'programme', element: <ProgrammePage /> },
+      { path: 'call-for-papers', element: <CallForPapersPage /> },
+      { path: 'paper-submission', element: <PaperSubmissionPage /> },
+      { path: 'submission-guidelines', element: <SubmissionGuidelinesPage /> },
+      { path: 'registration', element: <RegistrationPage /> },
+      { path: 'registration-benefits', element: <RegistrationBenefitsPage /> },
+      { path: 'awards', element: <AwardsPage /> },
+      { path: 'gallery', element: <GalleryPage /> },
+      { path: 'venue', element: <VenuePage /> },
+      { path: 'travel', element: <TravelPage /> },
+      { path: 'video-conferencing', element: <VideoConferencingPage /> },
+      { path: 'faq', element: <FaqPage /> },
+      { path: 'invitation-letter', element: <InvitationLetterPage /> },
+      { path: 'contact', element: <ContactPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

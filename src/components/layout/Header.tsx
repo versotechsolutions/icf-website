@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { ChevronDown, Mail, Menu, Phone, X } from 'lucide-react';
 import { mainNav, site } from '@/data/site';
@@ -10,7 +10,7 @@ import { NavDropdown } from './NavDropdown';
 import { navIcons } from './navIcons';
 import type { NavGroup } from '@/types';
 
-function UtilityBar() {
+export function UtilityBar({ children }: { children?: ReactNode }) {
   return (
     <div className="bg-navy-950 text-[0.82rem] text-white/80">
       <Container className="flex h-9 items-center justify-between gap-4">
@@ -25,18 +25,19 @@ function UtilityBar() {
             {site.contact.phone}
           </a>
         </div>
+        {children}
       </Container>
     </div>
   );
 }
 
-function isGroupActive(group: NavGroup, pathname: string) {
-  if (group.to) return group.to === '/' ? pathname === '/' : pathname.startsWith(group.to);
+function isGroupActive(group: NavGroup, pathname: string, homeTo: string) {
+  if (group.to) return group.to === homeTo ? pathname === homeTo : pathname.startsWith(group.to);
   return group.items?.some((i) => pathname.startsWith(i.to.split('?')[0])) ?? false;
 }
 
 /** Desktop navigation. Owns which dropdown is open so only one can be open at a time. */
-function DesktopNav({ pathname }: { pathname: string }) {
+function DesktopNav({ nav, homeTo, pathname }: { nav: NavGroup[]; homeTo: string; pathname: string }) {
   const [openLabel, setOpenLabel] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const closeTimer = useRef<number | undefined>(undefined);
@@ -59,13 +60,14 @@ function DesktopNav({ pathname }: { pathname: string }) {
   return (
     <nav ref={navRef} aria-label="Main" className="hidden xl:flex">
       <ul className="flex items-stretch">
-        {mainNav.map((g) =>
+        {nav.map((g, index) =>
           g.items ? (
             <NavDropdown
               key={g.label}
               group={g}
+              align={index >= nav.length - 3 ? 'right' : 'left'}
               open={openLabel === g.label}
-              active={isGroupActive(g, pathname)}
+              active={isGroupActive(g, pathname, homeTo)}
               onOpen={() => {
                 cancelClose();
                 setOpenLabel(g.label);
@@ -82,7 +84,7 @@ function DesktopNav({ pathname }: { pathname: string }) {
             <li key={g.label} className="relative" onPointerEnter={(e) => e.pointerType === 'mouse' && openLabel && scheduleClose()}>
               <NavLink
                 to={g.to!}
-                end={g.to === '/'}
+                end={g.to === homeTo}
                 onFocus={close}
                 className={({ isActive }) =>
                   cn('relative inline-flex h-full items-center whitespace-nowrap px-2.5 text-[0.95rem] font-semibold transition-colors', isActive ? 'text-navy-900' : 'text-ink/80 hover:text-navy-900')
@@ -103,7 +105,7 @@ function DesktopNav({ pathname }: { pathname: string }) {
   );
 }
 
-function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+function MobileMenu({ nav, homeTo, open, onClose }: { nav: NavGroup[]; homeTo: string; open: boolean; onClose: () => void }) {
   const [expanded, setExpanded] = useState<string | null>(null);
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -120,7 +122,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
     >
       <nav aria-label="Main" className="px-5 pb-10 pt-2 sm:px-8">
         <ul className="divide-y divide-rule">
-          {mainNav.map((g) =>
+          {nav.map((g) =>
             g.items ? (
               <li key={g.label}>
                 <button
@@ -174,7 +176,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
               </li>
             ) : (
               <li key={g.label}>
-                <NavLink to={g.to!} onClick={onClose} className="block py-4 text-lg font-semibold text-navy-900">
+                <NavLink to={g.to!} end={g.to === homeTo} onClick={onClose} className="block py-4 text-lg font-semibold text-navy-900">
                   {g.label}
                 </NavLink>
               </li>
@@ -186,7 +188,21 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
-export function Header() {
+/**
+ * Site header: utility bar, brand, desktop menu with dropdowns and the mobile menu.
+ * Defaults to the organisation site; the event (conference) site passes its own menu, brand and utility bar.
+ */
+export function Header({
+  nav = mainNav,
+  homeTo = '/',
+  brand = <Logo variant="lockup" />,
+  utility = <UtilityBar />,
+}: {
+  nav?: NavGroup[];
+  homeTo?: string;
+  brand?: ReactNode;
+  utility?: ReactNode;
+}) {
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -204,13 +220,13 @@ export function Header() {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-[60] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:font-semibold">
         Skip to main content
       </a>
-      <UtilityBar />
+      {utility}
       <header className={cn('sticky top-0 z-40 border-b bg-white/95 backdrop-blur transition-shadow', scrolled ? 'border-rule shadow-[var(--shadow-lift)]' : 'border-transparent')}>
         <Container className="flex h-[4.5rem] items-stretch justify-between gap-6">
           <div className="flex items-center py-2.5">
-            <Logo variant="lockup" />
+            {brand}
           </div>
-          <DesktopNav pathname={pathname} />
+          <DesktopNav nav={nav} homeTo={homeTo} pathname={pathname} />
           <div className="flex items-center gap-3">
             <button
               className="inline-flex size-11 items-center justify-center rounded-[var(--radius-sm)] text-navy-900 hover:bg-mist xl:hidden"
@@ -223,7 +239,7 @@ export function Header() {
             </button>
           </div>
         </Container>
-        <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
+        <MobileMenu nav={nav} homeTo={homeTo} open={mobileOpen} onClose={() => setMobileOpen(false)} />
       </header>
     </>
   );

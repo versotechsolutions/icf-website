@@ -37,7 +37,7 @@ export const mainNav: NavGroup[] = [
   {
     label: 'Conferences',
     items: [
-      { label: 'Upcoming conferences', to: '/conferences', description: 'Search by country, month, topic or keyword' },
+      { label: 'Upcoming conferences', to: '/conferences', description: 'Search by country, month or topic' },
       { label: 'Browse by topic', to: '/topics', description: 'Ten subject areas and their research themes' },
     ],
   },
@@ -48,15 +48,56 @@ export const mainNav: NavGroup[] = [
   { label: 'Contact', to: '/contact' },
 ];
 
+/**
+ * Header menu of each conference's event site (source: Event Details page.docx, "Header").
+ * `base` is the event site's address, e.g. /event/icicgb-26.
+ */
+export const eventNav = (base: string): NavGroup[] => [
+  { label: 'Home', to: base },
+  {
+    label: 'About',
+    items: [
+      { label: 'About ICF', to: `${base}/about-icf` },
+      { label: 'About Conference', to: `${base}/about` },
+    ],
+  },
+  { label: 'Program', to: `${base}/programme` },
+  { label: 'Call For Paper', to: `${base}/call-for-papers` },
+  {
+    label: 'Submission',
+    items: [
+      { label: 'Article Submission', to: `${base}/paper-submission` },
+      { label: 'Submission Guidelines', to: `${base}/submission-guidelines` },
+    ],
+  },
+  {
+    label: 'Registration',
+    items: [
+      { label: 'Fee Details', to: `${base}/registration` },
+      { label: 'Registration Benefits', to: `${base}/registration-benefits` },
+    ],
+  },
+  { label: 'Awards', to: `${base}/awards` },
+  { label: 'Gallery', to: `${base}/gallery` },
+  {
+    label: 'Venue',
+    items: [
+      { label: 'Tentative Venue', to: `${base}/venue` },
+      { label: 'Travel & Accommodation Info', to: `${base}/travel` },
+    ],
+  },
+  { label: 'Contact', to: `${base}/contact` },
+];
+
 /** Right-hand "Quick Links" shown on every conference/event page (source: Quick Links.docx). */
 export const eventQuickLinks: (NavItem & { action?: 'brochure' })[] = [
-  { label: 'Call for papers', to: '/call-for-papers' },
-  { label: 'Paper submission', to: '/paper-submission' },
-  { label: 'Register now', to: '/registration' },
-  { label: 'Tentative programme', to: '/programme' },
-  { label: 'Invitation letter', to: '/invitation-letter' },
+  { label: 'Call for Papers', to: '/call-for-papers' },
+  { label: 'Paper Submission', to: '/paper-submission' },
+  { label: 'Register Now', to: '/registration' },
+  { label: 'Tentative Programme', to: '/programme' },
+  { label: 'Invitation Letter', to: '/invitation-letter' },
   { label: 'Awards', to: '/awards' },
-  { label: 'Download brochure', to: '#brochure', action: 'brochure' },
+  { label: 'Download Brochure', to: '#brochure', action: 'brochure' },
 ];
 
 /** Footer columns (source: Footer page.docx, with links mapped to built pages). */

@@ -1,22 +1,7 @@
-import { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-
-function ScrollManager() {
-  const { pathname, hash } = useLocation();
-  useEffect(() => {
-    if (hash) {
-      const el = document.getElementById(hash.slice(1));
-      if (el) {
-        el.scrollIntoView();
-        return;
-      }
-    }
-    window.scrollTo(0, 0);
-  }, [pathname, hash]);
-  return null;
-}
+import { ScrollManager } from '@/components/layout/ScrollManager';
 
 export function SiteLayout() {
   return (

@@ -7,7 +7,6 @@ import { conferenceSnapshot, listConferences } from '@/services/conferences';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Container } from '@/components/ui/Container';
-import { Notice } from '@/components/ui/Notice';
 import { Pagination } from '@/components/ui/Pagination';
 import { Button } from '@/components/ui/Button';
 import { CountryCombobox } from '@/components/forms/CountryCombobox';
@@ -51,18 +50,14 @@ export default function ConferencesPage() {
   const navigate = useNavigate();
   const country = countryBySlug(countrySlug);
 
-  const keyword = params.get('q') ?? '';
   const topic = params.get('topic') ?? '';
   const month = params.get('month') ?? '';
   const continent = params.get('continent') ?? '';
   const page = Number(params.get('page') ?? '1') || 1;
 
-  const [draftKeyword, setDraftKeyword] = useState(keyword);
   const [result, setResult] = useState<Paged<Conference> | null>(null);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
-
-  useEffect(() => setDraftKeyword(keyword), [keyword]);
 
   const firstLoad = useRef(true);
   useEffect(() => {
@@ -74,7 +69,7 @@ export default function ConferencesPage() {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const hold = firstLoad.current || reduce ? 0 : CHANGE_HOLD_MS;
     firstLoad.current = false;
-    listConferences({ keyword, topic, month, continent, country: countrySlug, page, pageSize: PAGE_SIZE }).then((r) => {
+    listConferences({ topic, month, continent, country: countrySlug, page, pageSize: PAGE_SIZE }).then((r) => {
       holdTimer = window.setTimeout(() => {
         if (live) {
           setResult(r);
@@ -86,11 +81,11 @@ export default function ConferencesPage() {
       live = false;
       window.clearTimeout(holdTimer);
     };
-  }, [keyword, topic, month, continent, countrySlug, page]);
+  }, [topic, month, continent, countrySlug, page]);
 
   const topicName = topicBySlug(topic)?.name;
   const heading = country ? `Conferences in ${country.name}` : topicName ? `${topicName} conferences` : 'Upcoming conferences';
-  usePageMeta(heading, `Browse upcoming international academic conferences${country ? ` in ${country.name}` : ''}${topicName ? ` in ${topicName}` : ''}. Filter by country, month, subject and keyword.`);
+  usePageMeta(heading, `Browse upcoming international academic conferences${country ? ` in ${country.name}` : ''}${topicName ? ` in ${topicName}` : ''}. Filter by country, month and subject.`);
 
   const setParam = (key: string, value: string) => {
     const next = new URLSearchParams(params);
@@ -153,7 +148,7 @@ export default function ConferencesPage() {
     const list = conferenceSnapshot.countriesWithConferences();
     return country && !list.some((c) => c.code === country.code) ? [...list, country].sort((a, b) => a.name.localeCompare(b.name)) : list;
   }, [country]);
-  const activeCount = [keyword, topic, month, continent, countrySlug].filter(Boolean).length;
+  const activeCount = [topic, month, continent, countrySlug].filter(Boolean).length;
 
   const crumbs = country ? [{ label: 'Upcoming conferences', to: '/conferences' }, { label: country.name }] : [{ label: 'Upcoming conferences' }];
 
@@ -162,7 +157,7 @@ export default function ConferencesPage() {
       <PageHeader
         title={heading}
         crumbs={crumbs}
-        intro="Search international conferences, seminars, workshops and symposiums by country, month, subject area or keyword."
+        intro="Search international conferences, seminars, workshops and symposiums by country, month or subject area."
       />
 
       {/* Popular countries */}
@@ -195,58 +190,27 @@ export default function ConferencesPage() {
             <SlidersHorizontal aria-hidden className="size-4" />
             {filtersOpen ? 'Hide filters' : `Show filters${activeCount ? ` (${activeCount})` : ''}`}
           </Button>
-          <form
-            id="filters"
-            role="search"
-            aria-label="Filter conferences"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setParam('q', draftKeyword.trim());
-            }}
-            className={cn('mt-4 space-y-6 lg:sticky lg:top-28 lg:mt-0 lg:block', !filtersOpen && 'hidden')}
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="font-serif text-xl">Filter</h2>
-              {activeCount > 0 && (
-                <button type="button" onClick={clearAll} className="text-sm font-semibold text-globe-700 hover:underline">
-                  Clear all
-                </button>
-              )}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="flt-q" className="text-[0.92rem] font-semibold text-navy-900">
-                Keyword
-              </label>
-              <div className="flex gap-2">
-                <input id="flt-q" className="field-input" placeholder="Title, city or acronym" value={draftKeyword} onChange={(e) => setDraftKeyword(e.target.value)} />
-              </div>
-              <Button type="submit" size="sm" className="mt-1 self-start">
-                Search
-              </Button>
-            </div>
+          <div id="filters" className={cn('mt-4 space-y-6 lg:sticky lg:top-28 lg:mt-0 lg:block', !filtersOpen && 'hidden')}>
             <CountryCombobox label="Country" value={countrySlug ?? ''} onChange={setCountry} placeholder="All countries" options={countryOptions} />
-            <fieldset>
-              <legend className="mb-2 text-[0.92rem] font-semibold text-navy-900">Conference category</legend>
-              <div className="space-y-1">
-                <label className="flex cursor-pointer items-center gap-2.5 rounded px-1 py-1 text-[0.95rem] hover:bg-mist">
-                  <input type="radio" name="topic" checked={!topic} onChange={() => setParam('topic', '')} className="size-4 accent-navy-900" />
-                  All subject areas
-                </label>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="flt-topic" className="text-[0.92rem] font-semibold text-navy-900">
+                Conference category
+              </label>
+              <select id="flt-topic" className="field-input" value={topic} onChange={(e) => setParam('topic', e.target.value)}>
+                <option value="">All subject areas</option>
                 {topics.map((t) => (
-                  <label key={t.slug} className="flex cursor-pointer items-center gap-2.5 rounded px-1 py-1 text-[0.95rem] hover:bg-mist">
-                    <input type="radio" name="topic" checked={topic === t.slug} onChange={() => setParam('topic', t.slug)} className="size-4 accent-navy-900" />
+                  <option key={t.slug} value={t.slug}>
                     {t.name}
-                  </label>
+                  </option>
                 ))}
-              </div>
-            </fieldset>
-          </form>
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* Results */}
         <section aria-labelledby="results-heading" aria-busy={loading || gliding}>
-          <Notice tone="sample">Results below are development sample data. In Phase 2 this list will load from ICF's conference database.</Notice>
-          <nav ref={resultsTopRef} aria-label="Conferences by month" className="mt-6 border-b border-rule pb-4">
+          <nav ref={resultsTopRef} aria-label="Conferences by month" className="border-b border-rule pb-4">
             <ul className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
               {['', ...months].map((m) => {
                 const active = month === m;
@@ -276,21 +240,11 @@ export default function ConferencesPage() {
             <h2 id="results-heading" ref={headingRef} tabIndex={-1} className="font-serif text-xl outline-none" aria-live="polite">
               {loading ? 'Loading conferences…' : `${result?.total ?? 0} conference${result?.total === 1 ? '' : 's'} found`}
             </h2>
-            {(continent || keyword) && (
-              <div className="flex flex-wrap gap-2">
-                {continent && (
-                  <button onClick={() => setParam('continent', '')} className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-sm font-semibold text-navy-900 hover:bg-navy-100">
-                    {continent}
-                    <X aria-label="Remove continent filter" className="size-3.5" />
-                  </button>
-                )}
-                {keyword && (
-                  <button onClick={() => setParam('q', '')} className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-sm font-semibold text-navy-900 hover:bg-navy-100">
-                    "{keyword}"
-                    <X aria-label="Remove keyword filter" className="size-3.5" />
-                  </button>
-                )}
-              </div>
+            {continent && (
+              <button onClick={() => setParam('continent', '')} className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-sm font-semibold text-navy-900 hover:bg-navy-100">
+                {continent}
+                <X aria-label="Remove continent filter" className="size-3.5" />
+              </button>
             )}
           </div>
 
