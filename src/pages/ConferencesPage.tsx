@@ -190,7 +190,13 @@ export default function ConferencesPage() {
             <SlidersHorizontal aria-hidden className="size-4" />
             {filtersOpen ? 'Hide filters' : `Show filters${activeCount ? ` (${activeCount})` : ''}`}
           </Button>
-          <div id="filters" className={cn('mt-4 space-y-6 lg:sticky lg:top-28 lg:mt-0 lg:block', !filtersOpen && 'hidden')}>
+          <div
+            id="filters"
+            className={cn(
+              'mt-4 space-y-6 rounded-[var(--radius-md)] bg-navy-900 p-5 shadow-[var(--shadow-panel)] lg:sticky lg:top-28 lg:mt-0 lg:block [&_label]:text-white',
+              !filtersOpen && 'hidden',
+            )}
+          >
             <CountryCombobox label="Country" value={countrySlug ?? ''} onChange={setCountry} placeholder="All countries" options={countryOptions} />
             <div className="flex flex-col gap-1.5">
               <label htmlFor="flt-topic" className="text-[0.92rem] font-semibold text-navy-900">
