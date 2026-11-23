@@ -5,7 +5,8 @@ import { ScrollManager } from '@/components/layout/ScrollManager';
 
 export function SiteLayout() {
   return (
-    <div className="flex min-h-dvh flex-col">
+    // overflow-clip: cards entering from below the screen must not stretch the page while they rise in.
+    <div className="flex min-h-dvh flex-col overflow-clip">
       <ScrollManager />
       <Header />
       <main id="main" className="flex-1">

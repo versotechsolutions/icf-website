@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Handshake, Lightbulb, MessageSquareQuote, TrendingUp, Users } from 'lucide-react';
 import { aboutIntro, mission, pillars, vision } from '@/data/content';
@@ -16,6 +16,7 @@ import { HeroSlider } from '@/components/home/HeroSlider';
 import { EnquiryButton } from '@/components/home/EnquiryButton';
 import { PeerReviewTimeline } from '@/components/home/PeerReviewTimeline';
 import { ConferenceCard } from '@/components/conference/ConferenceCard';
+import { BounceInUp } from '@/components/ui/BounceInUp';
 import { TopicIcon } from '@/components/conference/TopicIcon';
 import { cn } from '@/utils/cn';
 import type { Continent } from '@/types';
@@ -91,24 +92,6 @@ function AboutIntro() {
 
 function Upcoming() {
   const list = conferenceSnapshot.upcoming(6);
-  // Same card grid and rise-and-settle entrance as the Conferences page, played when the section scrolls into view.
-  const gridRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = gridRef.current;
-    if (!el || !('IntersectionObserver' in window)) return setInView(true);
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setInView(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.2 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
   return (
     <section className="bg-mist py-20 lg:py-24" aria-labelledby="upcoming-heading">
       <Container>
@@ -125,9 +108,12 @@ function Upcoming() {
         <Notice tone="sample" className="mt-8">
           These listings are development sample data used to demonstrate the design. They will be replaced by ICF's live conference records.
         </Notice>
-        <div ref={gridRef} className={cn('mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3', inView ? 'grid-rise' : 'opacity-0')}>
+        {/* Same card entrance as the Conferences page: each card rises in as it scrolls into view. */}
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {list.map((c) => (
-            <ConferenceCard key={c.id} c={c} tone="white" />
+            <BounceInUp key={c.id} className="grid">
+              <ConferenceCard c={c} tone="white" />
+            </BounceInUp>
           ))}
         </div>
       </Container>

@@ -11,13 +11,12 @@ import { Pagination } from '@/components/ui/Pagination';
 import { Button } from '@/components/ui/Button';
 import { CountryCombobox } from '@/components/forms/CountryCombobox';
 import { ConferenceCard } from '@/components/conference/ConferenceCard';
+import { BounceInUp } from '@/components/ui/BounceInUp';
 import { formatMonthKey } from '@/utils/format';
 import { cn } from '@/utils/cn';
 import type { Conference, Paged } from '@/types';
 
 const PAGE_SIZE = 9;
-/** After a filter/page change, the new grid rises in no sooner than this (matches the reference page's pacing). */
-const CHANGE_HOLD_MS = 950;
 
 /** "November | 2026" label for a YYYY-MM month key. */
 const monthTabLabel = (key: string) => formatMonthKey(key).replace(/ (\d{4})$/, ' | $1');
@@ -56,30 +55,23 @@ export default function ConferencesPage() {
   const page = Number(params.get('page') ?? '1') || 1;
 
   const [result, setResult] = useState<Paged<Conference> | null>(null);
+  // Counts loaded result sets, so each new set of cards plays its entrance again (even if a card was already shown).
+  const [resultRun, setResultRun] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const firstLoad = useRef(true);
   useEffect(() => {
     let live = true;
-    let holdTimer: number | undefined;
     setLoading(true);
-    const started = performance.now();
-    // First load shows results as soon as they arrive; later changes keep the reference page's pause before the new grid rises.
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const hold = firstLoad.current || reduce ? 0 : CHANGE_HOLD_MS;
-    firstLoad.current = false;
     listConferences({ topic, month, continent, country: countrySlug, page, pageSize: PAGE_SIZE }).then((r) => {
-      holdTimer = window.setTimeout(() => {
-        if (live) {
-          setResult(r);
-          setLoading(false);
-        }
-      }, Math.max(0, hold - (performance.now() - started)));
+      if (live) {
+        setResult(r);
+        setResultRun((n) => n + 1);
+        setLoading(false);
+      }
     });
     return () => {
       live = false;
-      window.clearTimeout(holdTimer);
     };
   }, [topic, month, continent, countrySlug, page]);
 
@@ -103,41 +95,23 @@ export default function ConferencesPage() {
   const clearAll = () => navigate('/conferences');
 
   // Month and page changes stay on the results: glide to the month tabs instead of jumping to the page top.
+  // The new cards rise in as the glide brings them into view.
   const resultsTopRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  // While gliding, the cards wait (placeholder shown) so they rise and bounce in only once the list is in view.
-  const [gliding, setGliding] = useState(false);
-  const scrollToResults = () =>
-    new Promise<void>((resolve) => {
-      const el = resultsTopRef.current;
-      if (!el) return resolve();
-      const top = el.getBoundingClientRect().top;
-      if (top >= 0 && top < window.innerHeight * 0.4) return resolve(); // already in view near the top
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduce) {
-        el.scrollIntoView({ block: 'start' });
-        return resolve();
-      }
-      const done = () => {
-        window.clearTimeout(fallback);
-        window.removeEventListener('scrollend', done);
-        resolve();
-      };
-      const fallback = window.setTimeout(done, 1000); // browsers without the scrollend event
-      window.addEventListener('scrollend', done);
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  const glideToResults = () => {
-    setGliding(true);
-    scrollToResults().then(() => setGliding(false));
+  const scrollToResults = () => {
+    const el = resultsTopRef.current;
+    if (!el) return;
+    const top = el.getBoundingClientRect().top;
+    if (top >= 0 && top < window.innerHeight * 0.4) return; // already in view near the top
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   };
 
   // Landing on a link that already names a month or page (e.g. ?month=2027-01): glide down to the list.
   useEffect(() => {
     if (!params.get('month') && !params.get('page')) return;
-    setGliding(true);
     // Wait for the layout's scroll-to-top on navigation to run first.
-    const t = window.setTimeout(() => scrollToResults().then(() => setGliding(false)), 250);
+    const t = window.setTimeout(scrollToResults, 250);
     return () => window.clearTimeout(t);
   }, []); // run once, on landing
 
@@ -215,7 +189,7 @@ export default function ConferencesPage() {
         </div>
 
         {/* Results */}
-        <section aria-labelledby="results-heading" aria-busy={loading || gliding}>
+        <section aria-labelledby="results-heading" aria-busy={loading}>
           <nav ref={resultsTopRef} aria-label="Conferences by month" className="border-b border-rule pb-4">
             <ul className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
               {['', ...months].map((m) => {
@@ -226,7 +200,7 @@ export default function ConferencesPage() {
                       type="button"
                       onClick={() => {
                         setParam('month', m);
-                        glideToResults();
+                        scrollToResults();
                       }}
                       aria-pressed={active}
                       data-month={m}
@@ -257,7 +231,7 @@ export default function ConferencesPage() {
           {/* First load only; later changes fade the current grid out instead (see below). */}
           {loading && !result && <Loading />}
 
-          {!loading && !gliding && result && result.items.length === 0 && (
+          {!loading && result && result.items.length === 0 && (
             <div className="flex flex-col items-center py-16 text-center">
               <CalendarX2 aria-hidden className="size-12 text-gold-500" strokeWidth={1.3} />
               <h3 className="mt-5 text-h3">No conferences match these filters</h3>
@@ -269,16 +243,13 @@ export default function ConferencesPage() {
           )}
 
           {result && result.items.length > 0 && (
-            // Month/page change: the current grid fades out, then the new one rises as one block and settles with a small bounce.
-            <div
-              className={cn(
-                loading || gliding ? 'grid-fade-out pointer-events-none' : 'grid-rise',
-              )}
-              aria-hidden={loading || gliding || undefined}
-            >
-              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            // Month/page change: the current cards fade out while loading; each new card rises in and settles as it comes into view.
+            <div className={cn(loading && 'grid-fade-out pointer-events-none')} aria-hidden={loading || undefined}>
+              <div key={resultRun} className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {result.items.map((c) => (
-                  <ConferenceCard key={c.id} c={c} />
+                  <BounceInUp key={c.id} className="grid">
+                    <ConferenceCard c={c} />
+                  </BounceInUp>
                 ))}
               </div>
               <div className="mt-10">
@@ -286,7 +257,7 @@ export default function ConferencesPage() {
                   const next = new URLSearchParams(params);
                   next.set('page', String(p));
                   setParams(next);
-                  glideToResults();
+                  scrollToResults();
                   // Keep keyboard focus with the results rather than the page top.
                   headingRef.current?.focus({ preventScroll: true });
                 }} />

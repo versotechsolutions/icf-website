@@ -226,16 +226,19 @@
 }
 
 /*
- * Conference listing: after a month or page change the whole results grid rises from below as one block,
- * overshoots slightly upward and settles (matches the motion of the client's reference page).
+ * Conference cards: each card rises from below, overshoots slightly upward and settles with two small bounces
+ * (the "bounceInUp" motion of the client's reference page). It starts just below its place rather than far
+ * off-screen, so it is visible from the first frame.
  */
-@keyframes grid-rise {
-  0% { opacity: 0; transform: translateY(150px); }
-  45% { opacity: 1; transform: translateY(-10px); }
-  70% { transform: translateY(4px); }
-  100% { opacity: 1; transform: translateY(0); }
+@keyframes bounce-in-up {
+  from, 60%, 75%, 90%, to { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+  from { opacity: 0; transform: translate3d(0, 600px, 0); }
+  60% { opacity: 1; transform: translate3d(0, -20px, 0); }
+  75% { transform: translate3d(0, 10px, 0); }
+  90% { transform: translate3d(0, -5px, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
-.grid-rise { animation: grid-rise 650ms cubic-bezier(0.25, 1, 0.5, 1) both; }
+.bounce-in-up { animation: bounce-in-up 1.6s both; }
 @keyframes grid-fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
