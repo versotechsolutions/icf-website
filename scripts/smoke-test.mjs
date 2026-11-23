@@ -96,16 +96,32 @@ await test('Event site has its own menu, footer and conference-relative links', 
   await page.waitForSelector('header nav[aria-label=Main]');
   // The first "Main" nav is the desktop menu (the second is the mobile menu).
   const items = await page.$eval('header nav[aria-label=Main] > ul', (ul) => [...ul.children].map((li) => li.querySelector('a,button').textContent.trim()));
-  const expected = ['Home', 'About', 'Program', 'Call For Paper', 'Submission', 'Registration', 'Awards', 'Gallery', 'Venue', 'Contact'];
+  const expected = ['Home', 'About', 'Submission', 'Awards and Benefits', 'Venue', 'Contact', 'Registration'];
   assert(JSON.stringify(items) === JSON.stringify(expected), `event menu: ${items.join(', ')}`);
   const sub = await page.$$eval('#menu-submission a', (a) => a.map((x) => x.getAttribute('href')));
-  assert(sub.join() === '/event/icicgb-26/paper-submission,/event/icicgb-26/submission-guidelines', `submission menu: ${sub.join()}`);
+  assert(sub.join() === '/event/icicgb-26/paper-submission,/event/icicgb-26/submission-guidelines,/event/icicgb-26/presentation-guidelines', `submission menu: ${sub.join()}`);
+  // Top bar: phone, email, Video Conference and Conference FAQ.
+  const top = await page.$eval('a[href="/event/icicgb-26/faq"]', (a) => {
+    const bar = a.closest('.bg-navy-950');
+    return [...bar.querySelectorAll('a')].map((x) => x.getAttribute('href')).join();
+  });
+  assert(['tel:', 'mailto:', '/video-conferencing', '/faq'].every((h) => top.includes(h)), `event top bar: ${top}`);
   await go('/event/icicgb-26/submission-guidelines');
   await page.waitForFunction(() => document.querySelector('h1')?.textContent === 'Submission guidelines');
   const quick = await page.$$eval('aside[aria-labelledby=quick-links] a', (a) => a.map((x) => x.getAttribute('href')));
   assert(quick.length === 6 && quick.every((h) => h.startsWith('/event/icicgb-26/')), `quick links: ${quick.join()}`);
   const footer = await page.$eval('footer', (f) => f.textContent);
   assert(footer.includes('ICICGB-26') && footer.includes('Conference FAQ'), 'event footer missing');
+});
+
+await test('Join as Attendee preselects the Listener / Attendee fee', async () => {
+  await go('/event/icicgb-26');
+  const [btn] = await page.$$('xpath/.//a[normalize-space(.)="Join as Attendee"]');
+  await btn.click();
+  await page.waitForFunction(() => location.pathname === '/event/icicgb-26/registration');
+  await page.waitForSelector('input[name=registration-fee]:checked');
+  const fee = await page.$eval('input[name=registration-fee]:checked', (i) => i.value);
+  assert(fee === 'Listener / Attendee|pre', `selected fee: ${fee}`);
 });
 
 await test('Event Subscribe popup validates and captures the event link', async () => {

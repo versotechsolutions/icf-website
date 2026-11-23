@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Award as AwardIcon, GraduationCap, Medal, Mic2, ScrollText, Trophy } from 'lucide-react';
 import { awards } from '@/data/content';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { useSitePath } from '@/hooks/useEventSite';
+import { useEventSite, useSitePath } from '@/hooks/useEventSite';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Container } from '@/components/ui/Container';
 import { ButtonLink } from '@/components/ui/Button';
@@ -13,7 +13,9 @@ const benefitIcons = [Medal, AwardIcon, GraduationCap];
 
 /** Awards: the client asked for a row of buttons, one per award (Awards page.docx). Implemented as tabs. */
 export default function AwardsPage() {
-  usePageMeta('Awards', 'ICF conference awards: Best Paper, Best Presentation, Best Student Paper and Certificate of Participation.');
+  const event = useEventSite();
+  const title = event ? 'Awards and benefits' : 'Awards and recognition';
+  usePageMeta(event ? title : 'Awards', 'ICF conference awards: Best Paper, Best Presentation, Best Student Paper and Certificate of Participation.');
   const sitePath = useSitePath();
   const [active, setActive] = useState(awards[0].slug);
   const award = awards.find((a) => a.slug === active)!;
@@ -22,8 +24,8 @@ export default function AwardsPage() {
   return (
     <>
       <PageHeader
-        title="Awards and recognition"
-        crumbs={[{ label: 'Awards' }]}
+        title={title}
+        crumbs={[{ label: event ? title : 'Awards' }]}
         intro="ICF conferences recognise outstanding research, presentation and student contributions, subject to each conference's evaluation criteria."
       />
       <Container className="py-14">

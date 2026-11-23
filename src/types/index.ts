@@ -97,4 +97,6 @@ export interface NavGroup {
   label: string;
   to?: string;
   items?: NavItem[];
+  /** Shown as a button instead of a plain menu link. */
+  button?: boolean;
 }

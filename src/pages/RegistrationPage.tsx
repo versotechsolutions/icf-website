@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CheckCircle2, CreditCard, Info } from 'lucide-react';
 import { registrationCategoriesIntro, registrationFees, registrationInfo, registrationIntro, registrationRules, registrationSteps } from '@/data/content';
 import { site } from '@/data/site';
 import { conferenceSnapshot } from '@/services/conferences';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { useEventSite } from '@/hooks/useEventSite';
 import { useForm } from '@/hooks/useForm';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EventInfoLayout } from '@/layouts/EventInfoLayout';
@@ -75,14 +75,16 @@ function FeeTable({ selected, period, onPick }: { selected: string; period: stri
 
 export default function RegistrationPage() {
   usePageMeta('Registration', 'Register for an International Conference Forum (ICF) conference: categories, fees in USD and registration steps.');
-  const event = useEventSite();
   const conferences = conferenceSnapshot.upcoming();
   const [done, setDone] = useState(false);
+  // "Join as Attendee" on the event banner links here with ?category=attendee to preselect the Listener / Attendee fee.
+  const [params] = useSearchParams();
+  const startCategory = params.get('category') === 'attendee' ? 'Listener / Attendee' : '';
 
   const paperRequired: Rule = (v, all) => (presentingCategories.includes(all.category) && !v.trim() ? 'Enter the title of the paper you will present.' : null);
 
   const form = useForm(
-    { fullName: '', email: '', phoneCode: '+91', phone: '', country: '', institution: '', conference: '', category: '', period: 'pre', paperTitle: '', coAuthors: '0', consent: 'false' },
+    { fullName: '', email: '', phoneCode: '+91', phone: '', country: '', institution: '', conference: '', category: startCategory, period: 'pre', paperTitle: '', coAuthors: '0', consent: 'false' },
     {
       fullName: [required('your full name')],
       email: [required('your email address'), email],
@@ -111,7 +113,7 @@ export default function RegistrationPage() {
     <>
       <PageHeader
         title="Register for ICF conference"
-        crumbs={event ? [{ label: 'Registration' }, { label: 'Fee details' }] : [{ label: 'Registration' }]}
+        crumbs={[{ label: 'Registration' }]}
         intro={registrationIntro}
       />
       <EventInfoLayout>
@@ -134,7 +136,7 @@ export default function RegistrationPage() {
           </p>
         </section>
 
-        <section aria-labelledby="fees-h" className="mt-16">
+        <section id="fees" aria-labelledby="fees-h" className="mt-16 scroll-mt-28">
           <h2 id="fees-h" className="text-h2">
             Registration categories and fees
           </h2>

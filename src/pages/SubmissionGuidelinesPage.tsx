@@ -48,7 +48,7 @@ export default function SubmissionGuidelinesPage() {
         intro="Guidelines for preparing and submitting your abstract and full paper to an ICF conference."
       >
         <ButtonLink to={sitePath('/paper-submission')} variant="gold">
-          Go to article submission
+          Go to abstract submission
         </ButtonLink>
       </PageHeader>
       <EventInfoLayout>

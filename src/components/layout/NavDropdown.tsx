@@ -134,8 +134,8 @@ export function NavDropdown({ group, open, active, onOpen, onClose, onToggle, on
         onClick={onTriggerClick}
         onKeyDown={onTriggerKey}
         className={cn(
-          'relative inline-flex h-full items-center gap-1 whitespace-nowrap px-2.5 text-[0.95rem] font-semibold transition-colors',
-          open || active ? 'text-navy-900' : 'text-ink/80 hover:text-navy-900',
+          'relative inline-flex h-full items-center gap-1 whitespace-nowrap px-2.5 text-[0.95rem] font-bold transition-colors',
+          open || active ? 'text-navy-900' : 'text-navy-900 hover:text-globe-700',
         )}
       >
         {group.label}
@@ -234,7 +234,7 @@ export function DropdownLink({ item, index = 0, onNavigate }: { item: NavItem; i
               </span>
             )}
             <span className="min-w-0 flex-1">
-              <span className={cn('block font-semibold leading-snug text-white transition-colors', !isActive && 'group-hover/link:text-gold-300')}>
+              <span className={cn('block font-bold leading-snug text-white transition-colors', !isActive && 'group-hover/link:text-gold-300')}>
                 {item.label}
                 {isActive && <span className="sr-only"> (current page)</span>}
               </span>

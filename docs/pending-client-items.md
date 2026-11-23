@@ -36,6 +36,7 @@ The Phase 1 frontend has been built without waiting for the items below. Each on
 | B8 | The homepage banner artwork supplied in the homepage document uses an older logo variant (orange figure, sans-serif wordmark) | Not used, to keep the brand consistent; only its tagline and pillar words are reused |
 | B9 | Organisation registration is "Not yet registered". Should any legal entity name appear in the footer copyright? | "© International Conference Forum (ICF)" |
 | B10 | Reference website igaeglobal.com | It could not be reviewed from the development environment: the site blocks automated access (HTTP 403). The structure follows the client documents, which mirror that site's information architecture. |
+| B11 | Presentation guidelines text for the event site's Submission > Presentation Guidelines page | Page shows "To be published by ICF" and links online presenters to the video conference guide |
 
 ## C. Phase 2 items noted in the documents (not started)
 

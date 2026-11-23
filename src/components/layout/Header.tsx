@@ -5,14 +5,15 @@ import { mainNav, site } from '@/data/site';
 import { useOnClickOutside } from '@/hooks/useOnClickOutside';
 import { Container } from '@/components/ui/Container';
 import { Logo } from '@/components/ui/Logo';
+import { buttonClass } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
 import { NavDropdown } from './NavDropdown';
 import { navIcons } from './navIcons';
 import type { NavGroup } from '@/types';
 
-export function UtilityBar({ children }: { children?: ReactNode }) {
+export function UtilityBar({ children, className }: { children?: ReactNode; className?: string }) {
   return (
-    <div className="bg-navy-950 text-[0.82rem] text-white/80">
+    <div className={cn('bg-navy-950 text-[0.82rem] text-white/80', className)}>
       <Container className="flex h-9 items-center justify-between gap-4">
         <div className="flex items-center gap-5">
           <a href={`mailto:${site.contact.supportEmail}`} className="inline-flex items-center gap-1.5 hover:text-white">
@@ -80,6 +81,12 @@ function DesktopNav({ nav, homeTo, pathname }: { nav: NavGroup[]; homeTo: string
               onPointerEnter={cancelClose}
               onPointerLeave={scheduleClose}
             />
+          ) : g.button ? (
+            <li key={g.label} className="flex items-center px-2">
+              <NavLink to={g.to!} onFocus={close} className={buttonClass('gold', 'sm')}>
+                {g.label}
+              </NavLink>
+            </li>
           ) : (
             <li key={g.label} className="relative" onPointerEnter={(e) => e.pointerType === 'mouse' && openLabel && scheduleClose()}>
               <NavLink
@@ -87,7 +94,7 @@ function DesktopNav({ nav, homeTo, pathname }: { nav: NavGroup[]; homeTo: string
                 end={g.to === homeTo}
                 onFocus={close}
                 className={({ isActive }) =>
-                  cn('relative inline-flex h-full items-center whitespace-nowrap px-2.5 text-[0.95rem] font-semibold transition-colors', isActive ? 'text-navy-900' : 'text-ink/80 hover:text-navy-900')
+                  cn('relative inline-flex h-full items-center whitespace-nowrap px-2.5 text-[0.95rem] font-bold transition-colors', isActive ? 'text-navy-900' : 'text-navy-900 hover:text-globe-700')
                 }
               >
                 {({ isActive }) => (
@@ -129,7 +136,7 @@ function MobileMenu({ nav, homeTo, open, onClose }: { nav: NavGroup[]; homeTo: s
                   aria-expanded={expanded === g.label}
                   aria-controls={`m-${g.label.replace(/\s+/g, '-').toLowerCase()}`}
                   onClick={() => setExpanded((e) => (e === g.label ? null : g.label))}
-                  className="flex w-full items-center justify-between py-4 text-left text-lg font-semibold text-navy-900"
+                  className="flex w-full items-center justify-between py-4 text-left text-lg font-bold text-navy-900"
                 >
                   {g.label}
                   <ChevronDown aria-hidden className={cn('size-5 text-gold-500 transition-transform duration-200', expanded === g.label && 'rotate-180')} />
@@ -151,7 +158,7 @@ function MobileMenu({ nav, homeTo, open, onClose }: { nav: NavGroup[]; homeTo: s
                             to={i.to}
                             onClick={onClose}
                             className={({ isActive }) =>
-                              cn('relative flex items-center gap-3 rounded-[var(--radius-md)] px-2 py-2.5 text-[1.02rem] transition-colors active:bg-mist', isActive ? 'bg-mist font-semibold text-navy-900' : 'text-ink/85')
+                              cn('relative flex items-center gap-3 rounded-[var(--radius-md)] px-2 py-2.5 text-[1.02rem] transition-colors active:bg-mist', isActive ? 'bg-mist font-bold text-navy-900' : 'font-bold text-navy-900')
                             }
                           >
                             {({ isActive }) => (
@@ -174,9 +181,15 @@ function MobileMenu({ nav, homeTo, open, onClose }: { nav: NavGroup[]; homeTo: s
                   </ul>
                 </div>
               </li>
+            ) : g.button ? (
+              <li key={g.label} className="py-4">
+                <NavLink to={g.to!} onClick={onClose} className={buttonClass('gold', 'lg', 'w-full')}>
+                  {g.label}
+                </NavLink>
+              </li>
             ) : (
               <li key={g.label}>
-                <NavLink to={g.to!} end={g.to === homeTo} onClick={onClose} className="block py-4 text-lg font-semibold text-navy-900">
+                <NavLink to={g.to!} end={g.to === homeTo} onClick={onClose} className="block py-4 text-lg font-bold text-navy-900">
                   {g.label}
                 </NavLink>
               </li>
@@ -190,18 +203,21 @@ function MobileMenu({ nav, homeTo, open, onClose }: { nav: NavGroup[]; homeTo: s
 
 /**
  * Site header: utility bar, brand, desktop menu with dropdowns and the mobile menu.
- * Defaults to the organisation site; the event (conference) site passes its own menu, brand and utility bar.
+ * Defaults to the organisation site; the event (conference) site passes its own menu, brand and utility bar,
+ * plus a masthead: on large screens the brand and masthead share a row above the menu.
  */
 export function Header({
   nav = mainNav,
   homeTo = '/',
   brand = <Logo variant="lockup" />,
   utility = <UtilityBar />,
+  masthead,
 }: {
   nav?: NavGroup[];
   homeTo?: string;
   brand?: ReactNode;
   utility?: ReactNode;
+  masthead?: ReactNode;
 }) {
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -221,9 +237,17 @@ export function Header({
         Skip to main content
       </a>
       {utility}
+      {masthead && (
+        <div className="hidden border-b border-rule bg-white xl:block">
+          <Container className="flex items-center justify-between gap-8 py-4">
+            {brand}
+            {masthead}
+          </Container>
+        </div>
+      )}
       <header className={cn('sticky top-0 z-40 border-b bg-white/95 backdrop-blur transition-shadow', scrolled ? 'border-rule shadow-[var(--shadow-lift)]' : 'border-transparent')}>
         <Container className="flex h-[4.5rem] items-stretch justify-between gap-6">
-          <div className="flex items-center py-2.5">
+          <div className={cn('flex items-center py-2.5', !!masthead && 'xl:hidden')}>
             {brand}
           </div>
           <DesktopNav nav={nav} homeTo={homeTo} pathname={pathname} />

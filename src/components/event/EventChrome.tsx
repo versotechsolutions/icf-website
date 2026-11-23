@@ -1,5 +1,6 @@
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink, Mail, MonitorPlay, Phone } from 'lucide-react';
+import { CircleHelp, Mail, MonitorPlay, Phone, type LucideIcon } from 'lucide-react';
 import { site } from '@/data/site';
 import { Container } from '@/components/ui/Container';
 import { UtilityBar } from '@/components/layout/Header';
@@ -12,24 +13,69 @@ export function EventBrand({ conference, base }: { conference: Conference; base:
       <img src="/images/icf-emblem.webp" alt="" width={400} height={181} className="h-10 w-auto sm:h-11" />
       <span className="border-l border-rule pl-3 leading-tight" aria-hidden>
         <span className="block font-serif text-[1.1rem] font-bold text-navy-900">{conference.acronym}</span>
-        <span className="hidden text-[0.72rem] font-semibold text-muted sm:block xl:hidden">International Conference Forum</span>
+        <span className="hidden text-[0.72rem] font-semibold text-muted sm:block">International Conference Forum</span>
       </span>
     </Link>
   );
 }
 
-/** Top bar of the event site: contact details, the Video Conference page and a way back to the main ICF website. */
+function MastheadItem({ icon: Icon, title, detail, to, href }: { icon: LucideIcon; title: string; detail: ReactNode; to?: string; href?: string }) {
+  const body = (
+    <>
+      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-globe-600 text-white transition-colors group-hover:bg-navy-900">
+        <Icon aria-hidden className="size-5" strokeWidth={1.8} />
+      </span>
+      <span className="leading-tight">
+        <span className="block whitespace-nowrap text-[0.95rem] font-bold text-navy-900">{title}</span>
+        <span className="mt-0.5 block whitespace-nowrap text-[0.85rem] text-muted group-hover:text-globe-700">{detail}</span>
+      </span>
+    </>
+  );
+  const cls = 'group flex items-center gap-3';
+  return to ? (
+    <Link to={to} className={cls}>
+      {body}
+    </Link>
+  ) : (
+    <a href={href} className={cls}>
+      {body}
+    </a>
+  );
+}
+
+/** Large-screen header row beside the brand: Video Conference, Conference FAQ, phone and email. */
+export function EventMasthead({ base }: { base: string }) {
+  return (
+    <ul className="flex items-center gap-6 2xl:gap-9">
+      <li>
+        <MastheadItem icon={MonitorPlay} title="Video Conference" detail="Join sessions online" to={`${base}/video-conferencing`} />
+      </li>
+      <li>
+        <MastheadItem icon={CircleHelp} title="Conference FAQ" detail="Common questions" to={`${base}/faq`} />
+      </li>
+      <li>
+        <MastheadItem icon={Phone} title="Phone" detail={site.contact.phone} href={site.contact.phoneHref} />
+      </li>
+      <li>
+        <MastheadItem icon={Mail} title="Mail to" detail={site.contact.supportEmail} href={`mailto:${site.contact.supportEmail}`} />
+      </li>
+    </ul>
+  );
+}
+
+/** Compact top bar of the event site on phones and tablets: phone, email, Video Conference and Conference FAQ. */
 export function EventUtilityBar({ base }: { base: string }) {
   return (
-    <UtilityBar>
-      <div className="flex items-center gap-5">
+    <UtilityBar className="xl:hidden">
+      <div className="flex items-center gap-4 whitespace-nowrap sm:gap-5">
         <Link to={`${base}/video-conferencing`} className="inline-flex items-center gap-1.5 hover:text-white">
           <MonitorPlay aria-hidden className="size-3.5 text-gold-400" />
-          Video Conference
+          <span className="sr-only md:not-sr-only">Video Conference</span>
         </Link>
-        <Link to="/" className="hidden items-center gap-1.5 hover:text-white sm:inline-flex">
-          <ExternalLink aria-hidden className="size-3.5 text-gold-400" />
-          ICF main website
+        <Link to={`${base}/faq`} className="inline-flex items-center gap-1.5 hover:text-white">
+          <CircleHelp aria-hidden className="size-3.5 text-gold-400" />
+          <span className="hidden md:inline">Conference FAQ</span>
+          <span className="md:hidden">FAQ</span>
         </Link>
       </div>
     </UtilityBar>

@@ -1,17 +1,15 @@
 import { Link } from 'react-router-dom';
-import { Building2, CalendarDays, FileDown, FileText, Globe2, MapPin, MonitorPlay, Tag } from 'lucide-react';
+import { Building2, FileDown, FileText, Globe2, Tag } from 'lucide-react';
 import { agendaHighlights, exampleVenue } from '@/data/content';
 import { countryByCode } from '@/data/countries';
 import { topicBySlug } from '@/data/topics';
 import { useEventSite, useSitePath } from '@/hooks/useEventSite';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Container } from '@/components/ui/Container';
-import { ButtonLink } from '@/components/ui/Button';
-import { Notice, SampleTag } from '@/components/ui/Notice';
+import { Notice } from '@/components/ui/Notice';
 import { QuickLinks } from '@/components/conference/QuickLinks';
 import { AboutConferenceSection, HighlightsSection, RegistrationInfoSection } from '@/components/conference/ConferenceSections';
 import { ContactBlock } from '@/components/layout/ContactBlock';
-import { formatDateRange } from '@/utils/format';
 
 const sections = [
   ['about', 'About the conference'],
@@ -34,56 +32,6 @@ export default function ConferenceDetailsPage() {
 
   return (
     <>
-      {/* Event banner using the client-supplied conference photograph */}
-      <header className="relative overflow-hidden bg-navy-950 text-white">
-        <picture>
-          <source srcSet="/images/conference-hall-1400.webp" type="image/webp" />
-          <img src="/images/og-image.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-35" />
-        </picture>
-        <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/30" aria-hidden />
-        <Container className="relative py-12 sm:py-16">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-[var(--radius-sm)] border border-gold-400/70 px-2.5 py-1 font-serif text-lg font-semibold text-gold-300">{conf.acronym}</span>
-            {topic && <span className="text-white/75">{topic.name}</span>}
-            <SampleTag />
-          </div>
-          <h1 className="mt-4 max-w-4xl text-h1 text-white">{conf.title}</h1>
-          <dl className="mt-8 grid max-w-3xl gap-x-10 gap-y-4 text-[0.98rem] sm:grid-cols-3">
-            <div className="flex gap-3">
-              <CalendarDays aria-hidden className="mt-0.5 size-5 shrink-0 text-gold-400" />
-              <div>
-                <dt className="text-sm text-white/60">Dates (sample)</dt>
-                <dd className="font-semibold">{formatDateRange(conf.startDate, conf.endDate)}</dd>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <MapPin aria-hidden className="mt-0.5 size-5 shrink-0 text-gold-400" />
-              <div>
-                <dt className="text-sm text-white/60">Location (sample)</dt>
-                <dd className="font-semibold">
-                  {conf.city}, {country?.name}
-                </dd>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <MonitorPlay aria-hidden className="mt-0.5 size-5 shrink-0 text-gold-400" />
-              <div>
-                <dt className="text-sm text-white/60">Format</dt>
-                <dd className="font-semibold">{conf.mode}</dd>
-              </div>
-            </div>
-          </dl>
-          <div className="mt-9 flex flex-wrap gap-3">
-            <ButtonLink to={sitePath('/registration')} variant="gold" size="lg">
-              Register now
-            </ButtonLink>
-            <ButtonLink to={sitePath('/paper-submission')} variant="onDark" size="lg">
-              Submit a paper
-            </ButtonLink>
-          </div>
-        </Container>
-      </header>
-
       {/* In-page navigation */}
       <nav aria-label="On this page" className="sticky top-[4.5rem] z-30 border-b border-rule bg-white">
         <Container className="flex gap-1 overflow-x-auto">

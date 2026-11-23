@@ -24,7 +24,9 @@ All client copy is centralised in `src/data/`, so it can later be replaced by CM
 | Colours (navy, white, gold), favicon = logo icon | Requirement- icf.docx | `src/styles/index.css`, `public/favicon-32.png` |
 | Logo | `ICF -lOGO.png` (also embedded in Requirement- icf.docx) | Header lockup (emblem crop), footer, admin, favicon (globe crop) |
 | Tagline "Connect, share, advance" and hero line "Bringing researchers, professionals and innovators together for a better tomorrow"; four pillars (Global networking, Knowledge sharing, Collaboration opportunities, Impactful research) | Banner artwork embedded in Organization Home page Details.docx | Home hero, pillars strip |
-| Conference photograph (speaker at podium, world map) | Image embedded in Event Details page.docx | Home hero, conference details banner, OG image |
+| Conference photograph (speaker at podium, world map) | Image embedded in Event Details page.docx | OG image |
+| Home page running banner (Slider 1, 2, 3, shown in that order and repeated) | Folder `organization header slider` | Home hero (`src/components/home/HeroSlider.tsx`) |
+| International Conference Forum banner | Client-supplied banner PNG | Background of the event banner on every event page (behind the conference details) |
 
 ## Public pages
 
@@ -38,7 +40,7 @@ All client copy is centralised in `src/data/`, so it can later be replaced by CM
 | **Upcoming conferences** `/conferences`, `/conferences/:country` | Organization Home page Details.docx ("Upcoming Conference page / Listing Event" requirements) | Searchable country dropdown (lists the countries that have conferences, so every choice returns results; any country page still opens from a link), popular-country links, month tabs, filters (country, category dropdown), pagination, loading and empty states, responsive layout, SEO-friendly country URLs such as `/conferences/india`. **Results are sample data**, because the database connection is Phase 2. |
 | **Browse by topic** `/topics` | Organaization site/Browse by topic.docx; Call For paper - page.docx | 10 subject areas; subtopics per area (verbatim). Each area links to the filtered listing. |
 | **Conference details** `/event/:slug` | event details site/About Conf page.docx | ICICGB-26 example description (verbatim, placeholder token removed), conference highlights (6), registration information (3) |
-| **Event site** `/event/:slug/…` | Event Details page.docx ("Header" and "Footer" sections) | Each conference has its own site, opened in a new tab from the listings. Header menu exactly as listed: Home; About (About ICF, About Conference); Program; Call For Paper; Submission (Article Submission, Submission Guidelines); Registration; Awards; Gallery; Venue (Tentative Venue, Travel & Accommodation Info); Contact. Top bar with email, phone and the Video Conference link; footer with contact number and email. Quick Links on event pages point to that conference's own pages. |
+| **Event site** `/event/:slug/…` | Event Details page.docx ("Header" and "Footer" sections) | Each conference has its own site, opened in a new tab from the listings. Header menu as requested by the client: Home; About (About Conference, About ICF); Submission (Abstract Submission, Submission Guidelines, Presentation Guidelines); Awards and Benefits; Venue; Contact; Registration (shown as a button, last). Top bar with phone, email, Video Conference and Conference FAQ links; the Presentation Guidelines page shows a placeholder until ICF supplies the text; footer with contact number and email. Quick Links on event pages point to that conference's own pages. |
 | | Quick Links.docx | Right-hand Quick Links panel (Call for papers, Paper submission, Register now, Tentative programme, Invitation letter, Awards, Download brochure popup form) |
 | | Program.docx | Agenda highlights |
 | | Tentative venue page.docx | Example venue (Hilton Nagoya), labelled as an example |

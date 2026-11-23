@@ -57,36 +57,22 @@ export const eventNav = (base: string): NavGroup[] => [
   {
     label: 'About',
     items: [
-      { label: 'About ICF', to: `${base}/about-icf` },
       { label: 'About Conference', to: `${base}/about` },
+      { label: 'About ICF', to: `${base}/about-icf` },
     ],
   },
-  { label: 'Program', to: `${base}/programme` },
-  { label: 'Call For Paper', to: `${base}/call-for-papers` },
   {
     label: 'Submission',
     items: [
-      { label: 'Article Submission', to: `${base}/paper-submission` },
+      { label: 'Abstract Submission', to: `${base}/paper-submission` },
       { label: 'Submission Guidelines', to: `${base}/submission-guidelines` },
+      { label: 'Presentation Guidelines', to: `${base}/presentation-guidelines` },
     ],
   },
-  {
-    label: 'Registration',
-    items: [
-      { label: 'Fee Details', to: `${base}/registration` },
-      { label: 'Registration Benefits', to: `${base}/registration-benefits` },
-    ],
-  },
-  { label: 'Awards', to: `${base}/awards` },
-  { label: 'Gallery', to: `${base}/gallery` },
-  {
-    label: 'Venue',
-    items: [
-      { label: 'Tentative Venue', to: `${base}/venue` },
-      { label: 'Travel & Accommodation Info', to: `${base}/travel` },
-    ],
-  },
+  { label: 'Awards and Benefits', to: `${base}/awards` },
+  { label: 'Venue', to: `${base}/venue` },
   { label: 'Contact', to: `${base}/contact` },
+  { label: 'Registration', to: `${base}/registration`, button: true },
 ];
 
 /** Right-hand "Quick Links" shown on every conference/event page (source: Quick Links.docx). */

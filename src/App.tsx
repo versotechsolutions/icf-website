@@ -11,7 +11,7 @@ import CallForPapersPage from '@/pages/CallForPapersPage';
 import PaperSubmissionPage from '@/pages/PaperSubmissionPage';
 import SubmissionGuidelinesPage from '@/pages/SubmissionGuidelinesPage';
 import AboutConferencePage from '@/pages/AboutConferencePage';
-import RegistrationBenefitsPage from '@/pages/RegistrationBenefitsPage';
+import PresentationGuidelinesPage from '@/pages/PresentationGuidelinesPage';
 import RegistrationPage from '@/pages/RegistrationPage';
 import InvitationLetterPage from '@/pages/InvitationLetterPage';
 import AwardsPage from '@/pages/AwardsPage';
@@ -76,8 +76,8 @@ export const router = createBrowserRouter([
       { path: 'call-for-papers', element: <CallForPapersPage /> },
       { path: 'paper-submission', element: <PaperSubmissionPage /> },
       { path: 'submission-guidelines', element: <SubmissionGuidelinesPage /> },
+      { path: 'presentation-guidelines', element: <PresentationGuidelinesPage /> },
       { path: 'registration', element: <RegistrationPage /> },
-      { path: 'registration-benefits', element: <RegistrationBenefitsPage /> },
       { path: 'awards', element: <AwardsPage /> },
       { path: 'gallery', element: <GalleryPage /> },
       { path: 'venue', element: <VenuePage /> },

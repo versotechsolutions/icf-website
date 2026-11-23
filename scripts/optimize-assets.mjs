@@ -33,17 +33,20 @@ for (const size of [32, 180, 192, 512]) {
     .toFile(p(new URL('../public/', import.meta.url), size === 32 ? 'favicon-32.png' : size === 180 ? 'apple-touch-icon.png' : `icon-${size}.png`));
 }
 
-// Client-supplied conference photograph
+// Client-supplied conference photograph (social sharing image)
 const photo = p(src, 'conference-hall-supplied.jpeg');
-for (const w of [800, 1400]) {
-  await sharp(photo).resize({ width: w }).webp({ quality: 78 }).toFile(p(out, `conference-hall-${w}.webp`));
-}
 await sharp(photo).resize({ width: 1200 }).jpeg({ quality: 80, mozjpeg: true }).toFile(p(out, 'og-image.jpg'));
-console.log('done');
 
-// Client-supplied home page banner (1774×887): full size, plus a 900px version for phones.
+// Event banner background: the client-supplied ICF banner (1774×887), full size plus a 900px version for phones.
 const banner = p(src, 'home-banner-supplied.png');
 await sharp(banner).webp({ quality: 85 }).toFile(p(out, 'home-banner.webp'));
 await sharp(banner).resize({ width: 900 }).webp({ quality: 85 }).toFile(p(out, 'home-banner-900.webp'));
 await sharp(banner).jpeg({ quality: 85, mozjpeg: true }).toFile(p(out, 'home-banner.jpg'));
-console.log('banner done');
+
+// Home page running banner (folder "organization header slider", 2172×724): full size, plus 1100px for phones.
+for (const n of [1, 2, 3]) {
+  const slide = p(src, `home-slide-${n}-supplied.png`);
+  await sharp(slide).webp({ quality: 82 }).toFile(p(out, `home-slide-${n}.webp`));
+  await sharp(slide).resize({ width: 1100 }).webp({ quality: 80 }).toFile(p(out, `home-slide-${n}-1100.webp`));
+}
+console.log('done');

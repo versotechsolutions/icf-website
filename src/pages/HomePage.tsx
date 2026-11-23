@@ -12,6 +12,7 @@ import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ButtonLink } from '@/components/ui/Button';
 import { Notice } from '@/components/ui/Notice';
 import { ConferenceFinder } from '@/components/home/ConferenceFinder';
+import { HeroSlider } from '@/components/home/HeroSlider';
 import { EnquiryButton } from '@/components/home/EnquiryButton';
 import { PeerReviewTimeline } from '@/components/home/PeerReviewTimeline';
 import { ConferenceCard } from '@/components/conference/ConferenceCard';
@@ -24,22 +25,11 @@ const pillarIcons = [Users, Lightbulb, Handshake, TrendingUp];
 function Hero() {
   return (
     <section className="relative">
-      {/* Client-supplied home page banner (logo, tagline and the four pillars are part of the artwork) */}
       <h1 className="sr-only">International Conference Forum (ICF): {site.heroLine}</h1>
       <div className="bg-[#eaf2fb]">
-        <picture>
-          <source srcSet="/images/home-banner-900.webp 900w, /images/home-banner.webp 1774w" sizes="(max-width: 1600px) 100vw, 1600px" type="image/webp" />
-          <img
-            src="/images/home-banner.jpg"
-            width={1774}
-            height={887}
-            alt="International Conference Forum. Connect, Share, Advance. Bringing researchers, professionals and innovators together for a better tomorrow: global networking, knowledge sharing, collaboration opportunities and impactful research."
-            className="mx-auto block h-auto w-full max-w-[1600px]"
-            fetchPriority="high"
-          />
-        </picture>
+        <HeroSlider />
       </div>
-      <Container className="relative mt-8 lg:-mt-14">
+      <Container className="relative mt-8 lg:-mt-6">
         <ConferenceFinder />
       </Container>
     </section>

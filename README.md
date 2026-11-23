@@ -38,7 +38,7 @@ npm run assets                                   # regenerate optimised logo/fav
 | Home | `/` |
 | About | `/about` |
 | Conferences | `/conferences`, `/conferences/:country` (SEO country pages, for example `/conferences/india`), `/topics` |
-| Event site (one per conference, opens in a new tab) | `/event/:slug` (home, for example `/event/icicgb-26`) and its pages: `about-icf`, `about`, `programme`, `call-for-papers`, `paper-submission`, `submission-guidelines`, `registration`, `awards`, `gallery`, `venue`, `travel`, `video-conferencing`, `faq`, `invitation-letter`, `contact`. It has its own header menu, top bar and footer (`src/layouts/EventSiteLayout.tsx`). |
+| Event site (one per conference, opens in a new tab) | `/event/:slug` (home, for example `/event/icicgb-26`) and its pages: `about-icf`, `about`, `programme`, `call-for-papers`, `paper-submission`, `submission-guidelines`, `presentation-guidelines`, `registration`, `awards`, `gallery`, `venue`, `travel`, `video-conferencing`, `faq`, `invitation-letter`, `contact`. It has its own header menu, top bar and footer (`src/layouts/EventSiteLayout.tsx`). |
 | Main menu pages | `/paper-submission` (submission form only), `/invitation-letter`, `/awards` |
 | Event information (reached from the Quick links panel and conference pages, not the main menu) | `/registration`, `/call-for-papers`, `/programme`, `/faq`, `/venue`, `/travel`, `/video-conferencing` |
 | Other | `/gallery`, `/contact`, `/policies/:slug` (privacy, terms, disclaimer, refund-cancellation), 404 |

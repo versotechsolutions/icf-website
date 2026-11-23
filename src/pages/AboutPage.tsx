@@ -20,10 +20,10 @@ export default function AboutPage() {
 
       {/* Introduction — editorial two-column */}
       <section className="py-20">
-        <Container className="grid gap-12 lg:grid-cols-[1fr_1.35fr] lg:gap-20">
+        <Container className="grid gap-12 xl:grid-cols-[1fr_1.35fr] xl:gap-20">
           <div>
             <BookOpenCheck aria-hidden className="size-10 text-gold-500" strokeWidth={1.3} />
-            <p className="mt-6 font-serif text-[1.65rem] leading-snug text-navy-900">{aboutIntro[1]}</p>
+            <p className="mt-6 indent-[3em] font-serif text-[1rem] leading-[1.7] text-navy-900 sm:text-[1.1rem] xl:max-w-[29.2rem] xl:text-[1.25rem]">{aboutIntro[1]}</p>
           </div>
           {/* Width and first-line indent tuned so the justified lines have small, even word gaps on desktop */}
           <div className="prose-icf text-[1.075rem] leading-[1.75] text-ink/90 xl:max-w-[37.875rem] xl:[&>p]:indent-[2em]">
