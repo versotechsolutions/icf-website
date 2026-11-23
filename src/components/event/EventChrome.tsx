@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { CircleHelp, Mail, MonitorPlay, Phone, type LucideIcon } from 'lucide-react';
+import { Mail, MessageCircleQuestionMark, MonitorPlay, Phone, type LucideIcon } from 'lucide-react';
 import { site } from '@/data/site';
 import { Container } from '@/components/ui/Container';
 import { UtilityBar } from '@/components/layout/Header';
@@ -22,7 +22,7 @@ export function EventBrand({ conference, base }: { conference: Conference; base:
 function MastheadItem({ icon: Icon, title, detail, to, href }: { icon: LucideIcon; title: string; detail: ReactNode; to?: string; href?: string }) {
   const body = (
     <>
-      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-globe-600 text-white transition-colors group-hover:bg-navy-900">
+      <span className="grid size-11 shrink-0 place-items-center rounded-full bg-navy-900 text-white transition-colors group-hover:bg-globe-700">
         <Icon aria-hidden className="size-5" strokeWidth={1.8} />
       </span>
       <span className="leading-tight">
@@ -51,7 +51,7 @@ export function EventMasthead({ base }: { base: string }) {
         <MastheadItem icon={MonitorPlay} title="Video Conference" detail="Join sessions online" to={`${base}/video-conferencing`} />
       </li>
       <li>
-        <MastheadItem icon={CircleHelp} title="Conference FAQ" detail="Common questions" to={`${base}/faq`} />
+        <MastheadItem icon={MessageCircleQuestionMark} title="Conference FAQ" detail="Common questions" to={`${base}/faq`} />
       </li>
       <li>
         <MastheadItem icon={Phone} title="Phone" detail={site.contact.phone} href={site.contact.phoneHref} />
@@ -73,7 +73,7 @@ export function EventUtilityBar({ base }: { base: string }) {
           <span className="sr-only md:not-sr-only">Video Conference</span>
         </Link>
         <Link to={`${base}/faq`} className="inline-flex items-center gap-1.5 hover:text-white">
-          <CircleHelp aria-hidden className="size-3.5 text-gold-400" />
+          <MessageCircleQuestionMark aria-hidden className="size-3.5 text-gold-400" />
           <span className="hidden md:inline">Conference FAQ</span>
           <span className="md:hidden">FAQ</span>
         </Link>

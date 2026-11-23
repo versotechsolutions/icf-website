@@ -83,7 +83,7 @@ function DesktopNav({ nav, homeTo, pathname }: { nav: NavGroup[]; homeTo: string
             />
           ) : g.button ? (
             <li key={g.label} className="flex items-center px-2">
-              <NavLink to={g.to!} onFocus={close} className={buttonClass('gold', 'sm')}>
+              <NavLink to={g.to!} onFocus={close} className={buttonClass('gold', 'sm', 'bg-gradient-to-b from-gold-300 to-gold-500')}>
                 {g.label}
               </NavLink>
             </li>
@@ -183,7 +183,7 @@ function MobileMenu({ nav, homeTo, open, onClose }: { nav: NavGroup[]; homeTo: s
               </li>
             ) : g.button ? (
               <li key={g.label} className="py-4">
-                <NavLink to={g.to!} onClick={onClose} className={buttonClass('gold', 'lg', 'w-full')}>
+                <NavLink to={g.to!} onClick={onClose} className={buttonClass('gold', 'lg', 'w-full bg-gradient-to-b from-gold-300 to-gold-500')}>
                   {g.label}
                 </NavLink>
               </li>
